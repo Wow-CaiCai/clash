@@ -1,0 +1,334 @@
+rule-providers:
+
+  ads:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
+
+  ai:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ai.yaml
+
+  youtube:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml
+
+  apple:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml
+
+  google:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml
+
+  direct:
+    type: http
+    behavior: domain
+    format: text
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+
+  Bing:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Bing/Bing.yaml
+    path: ./ruleset/Bing.yaml
+
+  MicrosoftAPPs:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/main/MicrosoftAPPs/MicrosoftAPPs.yaml
+    path: ./ruleset/MicrosoftAPPs.yaml
+
+  Microsoft:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml
+    path: ./ruleset/Microsoft.yaml
+proxy-groups:
+
+  - name: "默认代理 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+    proxies:
+      - 自动选择 [系统]
+      - "香港节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "美国节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+
+  - name: "AI服务 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png
+    proxies:
+      - "美国节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "香港节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "油管专用 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+    proxies:
+      - "香港节点 [系统]"
+      - "美国节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "Steam 社区 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
+    proxies:
+      - "香港节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "美国节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "Steam 下载 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
+    proxies:
+      - "香港节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "美国节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "苹果服务 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
+    proxies:
+      - "香港节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "美国节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "谷歌服务 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+    proxies:
+      - "美国节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "香港节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "Pixiv [自选]"
+    type: select
+    icon: https://img.icons8.com/color/48/pixiv.png
+    proxies:
+      - "香港节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "美国节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "微软服务 [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
+    proxies:
+      - "香港节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "美国节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "全部节点 [系统]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
+    include-all-proxies: true
+    exclude-type: Direct
+
+  - name: 自动选择 [系统]
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "香港节点 [系统]"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    include-all-proxies: true
+    filter: "(?i)\U0001F1ED\U0001F1F0|香港|港|\\bHK\\b|\\bHKG\\b|Hong[ -]?Kong"
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "日本节点 [系统]"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+    include-all-proxies: true
+    filter: "(?i)\U0001F1EF\U0001F1F5|日本|日|\\bJP\\b|\\bJPN\\b|Japan|Tokyo|Osaka"
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "新加坡节点 [系统]"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+    include-all-proxies: true
+    filter: "(?i)\U0001F1F8\U0001F1EC|新加坡|新国|\\bSG\\b|\\bSGP\\b|Singapore"
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "美国节点 [系统]"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+    include-all-proxies: true
+    filter: "(?i)\U0001F1FA\U0001F1F8|美国|美|\\bUS\\b|\\bUSA\\b|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco"
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "台湾节点 [系统]"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+    include-all-proxies: true
+    filter: "(?i)\U0001F1F9\U0001F1FC|台湾|台|\\bTW\\b|\\bTWN\\b|Taiwan|Taipei"
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "其他地区 [系统]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png
+    include-all-proxies: true
+    filter: "(?i)^(?!.*(?:\U0001F1ED\U0001F1F0|\U0001F1EF\U0001F1F5|\U0001F1F8\U0001F1EC|\U0001F1FA\U0001F1F8|\U0001F1F9\U0001F1FC|香港|日本|新加坡|美国|台湾|\\bHK\\b|\\bHKG\\b|\\bJP\\b|\\bJPN\\b|\\bSG\\b|\\bSGP\\b|\\bUS\\b|\\bUSA\\b|\\bTW\\b|\\bTWN\\b|Hong[ -]?Kong|Japan|Tokyo|Osaka|Singapore|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco|Taiwan|Taipei)).*"
+    exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
+    exclude-type: Direct
+
+  - name: "广告拦截 [系统]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+    proxies:
+      - REJECT
+      - DIRECT
+# 规则按从上到下的顺序匹配；具体域名规则放在通用规则之前
+rules:
+  # 私有网络与广告处理
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - "RULE-SET,ads,广告拦截 [系统]"
+
+  # Steam 下载与内容分发域名使用可手动选择的 Steam 下载代理组
+  - "DOMAIN,steamcdn-a.akamaihd.net,Steam 下载 [自选]"
+  - "DOMAIN-SUFFIX,steamserver.net,Steam 下载 [自选]"
+  - "DOMAIN-SUFFIX,steamcontent.com,Steam 下载 [自选]"
+
+  # Pixiv 及图片、资讯站域名使用可手动选择的 Pixiv 代理组
+  - "DOMAIN-SUFFIX,pixiv.net,Pixiv [自选]"
+  - "DOMAIN-SUFFIX,pximg.net,Pixiv [自选]"
+  - "DOMAIN-SUFFIX,pixivision.net,Pixiv [自选]"
+
+  # AI 服务优先匹配，避免与微软域名规则重叠时被微软代理组接管
+  - "RULE-SET,ai,AI服务 [自选]"
+
+  # Bing 单独走微软代理组，优先于微软应用直连规则
+  - "RULE-SET,Bing,微软服务 [自选]"
+
+  # 其他中国区微软服务直连；Windows 更新、商店、Office 等规则也直连
+  - GEOSITE,microsoft@cn,DIRECT
+  - RULE-SET,MicrosoftAPPs,DIRECT
+
+  # 其余微软服务走微软代理组
+  - "RULE-SET,Microsoft,微软服务 [自选]"
+
+  # 其他单独指定的代理服务
+  - "DOMAIN,api.assrt.net,默认代理 [自选]"
+  - "RULE-SET,youtube,油管专用 [自选]"
+  - "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区 [自选]"
+  - "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区 [自选]"
+  - "RULE-SET,apple,苹果服务 [自选]"
+  - "RULE-SET,google,谷歌服务 [自选]"
+
+  # 通用直连规则与中国区兜底规则放在单项分流之后
+  - RULE-SET,direct,DIRECT
+  - GEOSITE,CN,DIRECT
+  - GEOIP,CN,DIRECT,no-resolve
+
+  # 未匹配规则默认使用默认代理组
+  - "MATCH,默认代理 [自选]"
