@@ -310,11 +310,13 @@ proxy-groups:
       - DIRECT
 # 规则按从上到下的顺序匹配；具体域名规则放在通用规则之前
 rules:
-  # 私有网络与广告处理
-  - GEOSITE,private,DIRECT
-  - GEOIP,private,DIRECT,no-resolve
+  # 广告规则优先匹配
   - "RULE-SET,ads,广告拦截 [系统]"
   - "RULE-SET,Ad,广告拦截 [系统]"
+
+  # 私有网络直连
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
 
   # Steam 下载与内容分发域名使用可手动选择的 Steam 下载代理组
   - "DOMAIN,steamcdn-a.akamaihd.net,Steam 下载 [自选]"
