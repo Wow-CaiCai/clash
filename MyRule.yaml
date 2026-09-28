@@ -299,6 +299,7 @@ rules:
   - "DOMAIN-SUFFIX,steamserver.net,Steam 下载 [自选]"
   - "DOMAIN-SUFFIX,steamcontent.com,Steam 下载 [自选]"
   - "DOMAIN-SUFFIX,steamstatic.com,Steam 下载 [自选]"
+  - "DOMAIN-SUFFIX,steamusercontent.com,Steam 下载 [自选]"
 
   # Pixiv 及图片、资讯站域名使用可手动选择的 Pixiv 代理组
   - "DOMAIN-SUFFIX,pixiv.net,Pixiv [自选]"
