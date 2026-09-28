@@ -7,6 +7,14 @@ rule-providers:
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
 
+  Ad:
+    type: http
+    behavior: domain
+    format: text
+    interval: 86400
+    url: https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt
+    path: ./ruleset/anti-ad-clash.yaml
+
   ai:
     type: http
     behavior: classical
@@ -306,6 +314,7 @@ rules:
   - GEOSITE,private,DIRECT
   - GEOIP,private,DIRECT,no-resolve
   - "RULE-SET,ads,广告拦截 [系统]"
+  - "RULE-SET,Ad,广告拦截 [系统]"
 
   # Steam 下载与内容分发域名使用可手动选择的 Steam 下载代理组
   - "DOMAIN,steamcdn-a.akamaihd.net,Steam 下载 [自选]"
