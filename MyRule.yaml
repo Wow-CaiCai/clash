@@ -93,6 +93,19 @@ proxy-groups:
       - "全部节点 [系统]"
       - DIRECT
 
+  - name: "Gemini [自选]"
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png
+    proxies:
+      - "美国节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "香港节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
   - name: "油管专用 [自选]"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
@@ -306,7 +319,21 @@ rules:
   - "DOMAIN-SUFFIX,pximg.net,Pixiv [自选]"
   - "DOMAIN-SUFFIX,pixivision.net,Pixiv [自选]"
 
-  # AI 服务优先匹配，避免与微软域名规则重叠时被微软代理组接管
+  # Gemini 及其 API/辅助域名优先于通用 AI 规则，使用独立代理组
+  - "DOMAIN-SUFFIX,gemini.google.com,Gemini [自选]"
+  - "DOMAIN-SUFFIX,gemini.google,Gemini [自选]"
+  - "DOMAIN-SUFFIX,bard.google.com,Gemini [自选]"
+  - "DOMAIN-SUFFIX,gemini.gstatic.com,Gemini [自选]"
+  - "DOMAIN-SUFFIX,ai.google.dev,Gemini [自选]"
+  - "DOMAIN-SUFFIX,aistudio.google.com,Gemini [自选]"
+  - "DOMAIN-SUFFIX,makersuite.google.com,Gemini [自选]"
+  - "DOMAIN-SUFFIX,generativelanguage.googleapis.com,Gemini [自选]"
+  - "DOMAIN,alkalimakersuite-pa.clients6.google.com,Gemini [自选]"
+  - "DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com,Gemini [自选]"
+  - "DOMAIN,geller-pa.googleapis.com,Gemini [自选]"
+  - "DOMAIN,proactivebackend-pa.googleapis.com,Gemini [自选]"
+
+  # 其他 AI 服务走通用 AI 代理组
   - "RULE-SET,ai,AI服务 [自选]"
 
   # Bing 单独走微软代理组，优先于微软应用直连规则
