@@ -19,12 +19,33 @@ const customConfig = {
       "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt",
       "path": "./ruleset/anti-ad-clash.yaml"
     },
-    "ai": {
+    "chatgpt": {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ai.yaml"
+      "url": "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/openai.yaml"
+    },
+    "google-ai": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/google-ai.yaml"
+    },
+    "ai-cn": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/cn.yaml"
+    },
+    "ai-global": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml"
     },
     "youtube": {
       "type": "http",
@@ -50,9 +71,56 @@ const customConfig = {
     "direct": {
       "type": "http",
       "behavior": "domain",
-      "format": "text",
+      "format": "yaml",
       "interval": 86400,
       "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+    },
+    "applications": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+    },
+    "icloud": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt",
+      "path": "./ruleset/icloud.yaml"
+    },
+    "apple-direct": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt",
+      "path": "./ruleset/apple-direct.yaml"
+    },
+    "private": {
+      "type": "http",
+      "behavior": "domain",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt",
+      "path": "./ruleset/private.yaml"
+    },
+    "cncidr": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt",
+      "path": "./ruleset/cncidr.yaml"
+    },
+    "lancidr": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
+      "path": "./ruleset/lancidr.yaml"
     },
     "Bing": {
       "type": "http",
@@ -81,165 +149,150 @@ const customConfig = {
   },
   "proxy-groups": [
     {
-      "name": "漏网之鱼 [自选]",
+      "name": "漏网之鱼",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png",
       "proxies": [
-        "自动选择 [系统]",
-        "香港节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "美国节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "自动选择",
+        "香港节点",
+        "日本节点",
+        "新加坡节点",
+        "美国节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "AI服务 [自选]",
+      "name": "AI",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png",
       "proxies": [
-        "美国节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "香港节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "美国节点",
+        "日本节点",
+        "新加坡节点",
+        "香港节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "Gemini [自选]",
+      "name": "ChatGPT",
+      "type": "select",
+      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png",
+      "proxies": [
+        "美国节点",
+        "日本节点",
+        "新加坡节点",
+        "香港节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
+        "DIRECT"
+      ]
+    },
+    {
+      "name": "Gemini",
       "type": "select",
       "icon": "https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png",
       "proxies": [
-        "美国节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "香港节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "美国节点",
+        "日本节点",
+        "新加坡节点",
+        "香港节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "油管专用 [自选]",
+      "name": "Youtube",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png",
       "proxies": [
-        "香港节点 [系统]",
-        "美国节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "香港节点",
+        "美国节点",
+        "日本节点",
+        "新加坡节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "Steam 社区 [自选]",
+      "name": "Steam",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png",
       "proxies": [
-        "香港节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "美国节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "香港节点",
+        "日本节点",
+        "新加坡节点",
+        "美国节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "Steam 下载 [自选]",
-      "type": "select",
-      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png",
-      "proxies": [
-        "香港节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "美国节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
-        "DIRECT"
-      ]
-    },
-    {
-      "name": "苹果服务 [自选]",
-      "type": "select",
-      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png",
-      "proxies": [
-        "香港节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "美国节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
-        "DIRECT"
-      ]
-    },
-    {
-      "name": "谷歌服务 [自选]",
+      "name": "Google",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png",
       "proxies": [
-        "美国节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "香港节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "美国节点",
+        "日本节点",
+        "新加坡节点",
+        "香港节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "Pixiv [自选]",
+      "name": "Pixiv",
       "type": "select",
       "icon": "https://img.icons8.com/color/48/pixiv.png",
       "proxies": [
-        "香港节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "美国节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "香港节点",
+        "日本节点",
+        "新加坡节点",
+        "美国节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "微软服务 [自选]",
+      "name": "Microsoft",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png",
       "proxies": [
-        "香港节点 [系统]",
-        "日本节点 [系统]",
-        "新加坡节点 [系统]",
-        "美国节点 [系统]",
-        "台湾节点 [系统]",
-        "其他地区 [系统]",
-        "全部节点 [系统]",
+        "香港节点",
+        "日本节点",
+        "新加坡节点",
+        "美国节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
         "DIRECT"
       ]
     },
     {
-      "name": "全部节点 [系统]",
+      "name": "全部节点",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png",
       "include-all-proxies": true,
       "exclude-type": "Direct"
     },
     {
-      "name": "自动选择 [系统]",
+      "name": "自动选择",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png",
       "include-all-proxies": true,
@@ -253,7 +306,7 @@ const customConfig = {
       "lazy": true
     },
     {
-      "name": "香港节点 [系统]",
+      "name": "香港节点",
       "type": "url-test",
       "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png",
@@ -269,7 +322,7 @@ const customConfig = {
       "lazy": true
     },
     {
-      "name": "日本节点 [系统]",
+      "name": "日本节点",
       "type": "url-test",
       "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png",
@@ -285,7 +338,7 @@ const customConfig = {
       "lazy": true
     },
     {
-      "name": "新加坡节点 [系统]",
+      "name": "新加坡节点",
       "type": "url-test",
       "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png",
@@ -301,7 +354,7 @@ const customConfig = {
       "lazy": true
     },
     {
-      "name": "美国节点 [系统]",
+      "name": "美国节点",
       "type": "url-test",
       "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png",
@@ -317,7 +370,7 @@ const customConfig = {
       "lazy": true
     },
     {
-      "name": "台湾节点 [系统]",
+      "name": "台湾节点",
       "type": "url-test",
       "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png",
@@ -333,7 +386,7 @@ const customConfig = {
       "lazy": true
     },
     {
-      "name": "其他地区 [系统]",
+      "name": "其他地区",
       "type": "select",
       "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png",
@@ -343,7 +396,7 @@ const customConfig = {
       "exclude-type": "Direct"
     },
     {
-      "name": "广告拦截 [系统]",
+      "name": "广告拦截",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png",
       "proxies": [
@@ -353,45 +406,45 @@ const customConfig = {
     }
   ],
   "rules": [
-    "RULE-SET,ads,广告拦截 [系统]",
-    "RULE-SET,Ad,广告拦截 [系统]",
+    "RULE-SET,ads,广告拦截",
+    "RULE-SET,Ad,广告拦截",
+    "RULE-SET,applications,DIRECT",
+    "DOMAIN,clash.razord.top,DIRECT",
+    "DOMAIN,yacd.haishan.me,DIRECT",
+    "RULE-SET,private,DIRECT",
+    "RULE-SET,icloud,DIRECT",
+    "RULE-SET,apple-direct,DIRECT",
     "GEOSITE,private,DIRECT",
     "GEOIP,private,DIRECT,no-resolve",
-    "DOMAIN,steamcdn-a.akamaihd.net,Steam 下载 [自选]",
-    "DOMAIN-SUFFIX,steamserver.net,Steam 下载 [自选]",
-    "DOMAIN-SUFFIX,steamcontent.com,Steam 下载 [自选]",
-    "DOMAIN-SUFFIX,steamstatic.com,Steam 下载 [自选]",
-    "DOMAIN-SUFFIX,steamusercontent.com,Steam 下载 [自选]",
-    "DOMAIN-SUFFIX,pixiv.net,Pixiv [自选]",
-    "DOMAIN-SUFFIX,pximg.net,Pixiv [自选]",
-    "DOMAIN-SUFFIX,pixivision.net,Pixiv [自选]",
-    "DOMAIN-SUFFIX,gemini.google.com,Gemini [自选]",
-    "DOMAIN-SUFFIX,gemini.google,Gemini [自选]",
-    "DOMAIN-SUFFIX,bard.google.com,Gemini [自选]",
-    "DOMAIN-SUFFIX,gemini.gstatic.com,Gemini [自选]",
-    "DOMAIN-SUFFIX,ai.google.dev,Gemini [自选]",
-    "DOMAIN-SUFFIX,aistudio.google.com,Gemini [自选]",
-    "DOMAIN-SUFFIX,makersuite.google.com,Gemini [自选]",
-    "DOMAIN-SUFFIX,generativelanguage.googleapis.com,Gemini [自选]",
-    "DOMAIN,alkalimakersuite-pa.clients6.google.com,Gemini [自选]",
-    "DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com,Gemini [自选]",
-    "DOMAIN,geller-pa.googleapis.com,Gemini [自选]",
-    "DOMAIN,proactivebackend-pa.googleapis.com,Gemini [自选]",
-    "RULE-SET,ai,AI服务 [自选]",
-    "RULE-SET,Bing,微软服务 [自选]",
+    "RULE-SET,lancidr,DIRECT,no-resolve",
+    "GEOIP,LAN,DIRECT,no-resolve",
+    "DOMAIN,steamcdn-a.akamaihd.net,DIRECT",
+    "DOMAIN-SUFFIX,steamserver.net,DIRECT",
+    "DOMAIN-SUFFIX,steamcontent.com,DIRECT",
+    "DOMAIN-SUFFIX,steamstatic.com,DIRECT",
+    "DOMAIN-SUFFIX,steamusercontent.com,DIRECT",
+    "DOMAIN-SUFFIX,pixiv.net,Pixiv",
+    "DOMAIN-SUFFIX,pximg.net,Pixiv",
+    "DOMAIN-SUFFIX,pixivision.net,Pixiv",
+    "RULE-SET,chatgpt,ChatGPT",
+    "RULE-SET,google-ai,Gemini",
+    "RULE-SET,ai-cn,DIRECT",
+    "RULE-SET,ai-global,AI",
+    "RULE-SET,Bing,Microsoft",
     "GEOSITE,microsoft@cn,DIRECT",
     "RULE-SET,MicrosoftAPPs,DIRECT",
-    "RULE-SET,Microsoft,微软服务 [自选]",
-    "DOMAIN,api.assrt.net,漏网之鱼 [自选]",
-    "RULE-SET,youtube,油管专用 [自选]",
-    "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区 [自选]",
-    "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区 [自选]",
-    "RULE-SET,apple,苹果服务 [自选]",
-    "RULE-SET,google,谷歌服务 [自选]",
+    "RULE-SET,Microsoft,Microsoft",
+    "DOMAIN,api.assrt.net,漏网之鱼",
+    "RULE-SET,youtube,Youtube",
+    "DOMAIN-SUFFIX,store.steampowered.com,Steam",
+    "DOMAIN-SUFFIX,steamcommunity.com,Steam",
+    "RULE-SET,apple,DIRECT",
+    "RULE-SET,google,Google",
     "RULE-SET,direct,DIRECT",
     "GEOSITE,CN,DIRECT",
+    "RULE-SET,cncidr,DIRECT,no-resolve",
     "GEOIP,CN,DIRECT,no-resolve",
-    "MATCH,漏网之鱼 [自选]"
+    "MATCH,漏网之鱼"
   ]
 };
 

@@ -67,21 +67,21 @@ rule-providers:
   direct:
     type: http
     behavior: domain
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
 
   applications:
     type: http
     behavior: classical
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt
 
   icloud:
     type: http
     behavior: domain
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
     path: ./ruleset/icloud.yaml
@@ -89,7 +89,7 @@ rule-providers:
   apple-direct:
     type: http
     behavior: domain
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
     path: ./ruleset/apple-direct.yaml
@@ -97,7 +97,7 @@ rule-providers:
   private:
     type: http
     behavior: domain
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
     path: ./ruleset/private.yaml
@@ -105,7 +105,7 @@ rule-providers:
   cncidr:
     type: http
     behavior: ipcidr
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
     path: ./ruleset/cncidr.yaml
@@ -113,7 +113,7 @@ rule-providers:
   lancidr:
     type: http
     behavior: ipcidr
-    format: text
+    format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
     path: ./ruleset/lancidr.yaml
@@ -412,25 +412,25 @@ rules:
   - "RULE-SET,ai-cn,DIRECT"
 
   # 其余海外 AI 服务走通用 AI 代理组
-  - "RULE-SET,ai-global,AI服务"
+  - "RULE-SET,ai-global,AI"
 
   # Bing 单独走微软代理组，优先于微软应用直连规则
-  - "RULE-SET,Bing,微软服务"
+  - "RULE-SET,Bing,Microsoft"
 
   # 其他中国区微软服务直连；Windows 更新、商店、Office 等规则也直连
   - GEOSITE,microsoft@cn,DIRECT
   - RULE-SET,MicrosoftAPPs,DIRECT
 
   # 其余微软服务走微软代理组
-  - "RULE-SET,Microsoft,微软服务"
+  - "RULE-SET,Microsoft,Microsoft"
 
   # 其他单独指定的代理服务
   - "DOMAIN,api.assrt.net,漏网之鱼"
-  - "RULE-SET,youtube,油管专用"
-  - "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区"
-  - "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区"
+  - "RULE-SET,youtube,Youtube"
+  - "DOMAIN-SUFFIX,store.steampowered.com,Steam"
+  - "DOMAIN-SUFFIX,steamcommunity.com,Steam"
   - RULE-SET,apple,DIRECT
-  - "RULE-SET,google,谷歌服务"
+  - "RULE-SET,google,Google"
 
   # 通用直连规则与中国区兜底规则放在单项分流之后
   - RULE-SET,direct,DIRECT
