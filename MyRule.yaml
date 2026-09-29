@@ -15,12 +15,33 @@ rule-providers:
     url: https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt
     path: ./ruleset/anti-ad-clash.yaml
 
-  ai:
+  chatgpt:
     type: http
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ai.yaml
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/openai.yaml
+
+  google-ai:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/google-ai.yaml
+
+  ai-cn:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/cn.yaml
+
+  ai-global:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml
 
   youtube:
     type: http
@@ -92,6 +113,19 @@ proxy-groups:
   - name: "AI服务 [自选]"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png
+    proxies:
+      - "美国节点 [系统]"
+      - "日本节点 [系统]"
+      - "新加坡节点 [系统]"
+      - "香港节点 [系统]"
+      - "台湾节点 [系统]"
+      - "其他地区 [系统]"
+      - "全部节点 [系统]"
+      - DIRECT
+
+  - name: "ChatGPT [自选]"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
     proxies:
       - "美国节点 [系统]"
       - "日本节点 [系统]"
@@ -337,22 +371,17 @@ rules:
   - "DOMAIN-SUFFIX,pximg.net,Pixiv [自选]"
   - "DOMAIN-SUFFIX,pixivision.net,Pixiv [自选]"
 
-  # Gemini 及其 API/辅助域名优先于通用 AI 规则，使用独立代理组
-  - "DOMAIN-SUFFIX,gemini.google.com,Gemini [自选]"
-  - "DOMAIN-SUFFIX,gemini.google,Gemini [自选]"
-  - "DOMAIN-SUFFIX,bard.google.com,Gemini [自选]"
-  - "DOMAIN-SUFFIX,gemini.gstatic.com,Gemini [自选]"
-  - "DOMAIN-SUFFIX,ai.google.dev,Gemini [自选]"
-  - "DOMAIN-SUFFIX,aistudio.google.com,Gemini [自选]"
-  - "DOMAIN-SUFFIX,makersuite.google.com,Gemini [自选]"
-  - "DOMAIN-SUFFIX,generativelanguage.googleapis.com,Gemini [自选]"
-  - "DOMAIN,alkalimakersuite-pa.clients6.google.com,Gemini [自选]"
-  - "DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com,Gemini [自选]"
-  - "DOMAIN,geller-pa.googleapis.com,Gemini [自选]"
-  - "DOMAIN,proactivebackend-pa.googleapis.com,Gemini [自选]"
+  # ChatGPT / OpenAI 独立选择地区
+  - "RULE-SET,chatgpt,ChatGPT [自选]"
 
-  # 其他 AI 服务走通用 AI 代理组
-  - "RULE-SET,ai,AI服务 [自选]"
+  # Gemini / Google AI 使用仓库规则集，独立选择地区
+  - "RULE-SET,google-ai,Gemini [自选]"
+
+  # 国内 AI 服务直连
+  - "RULE-SET,ai-cn,DIRECT"
+
+  # 其余海外 AI 服务走通用 AI 代理组
+  - "RULE-SET,ai-global,AI服务 [自选]"
 
   # Bing 单独走微软代理组，优先于微软应用直连规则
   - "RULE-SET,Bing,微软服务 [自选]"
