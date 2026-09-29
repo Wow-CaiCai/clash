@@ -118,13 +118,13 @@ rule-providers:
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
     path: ./ruleset/lancidr.yaml
 
-  telegramcidr:
+  Telegram:
     type: http
-    behavior: ipcidr
+    behavior: classical
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
-    path: ./ruleset/telegramcidr.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
+    path: ./ruleset/Telegram.yaml
 
   GitHub:
     type: http
@@ -477,8 +477,8 @@ rules:
   - RULE-SET,apple,DIRECT
   - "RULE-SET,google,Google"
 
-  # Telegram IP 地址使用 Loyalsoldier 仓库规则集
-  - "RULE-SET,telegramcidr,Telegram"
+  # Telegram 域名、IP 和应用使用 blackmatrix7 仓库规则集
+  - "RULE-SET,Telegram,Telegram"
 
   # 通用直连规则与中国区兜底规则放在单项分流之后
   - RULE-SET,direct,DIRECT

@@ -122,13 +122,13 @@ const customConfig = {
       "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
       "path": "./ruleset/lancidr.yaml"
     },
-    "telegramcidr": {
+    "Telegram": {
       "type": "http",
-      "behavior": "ipcidr",
+      "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt",
-      "path": "./ruleset/telegramcidr.yaml"
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml",
+      "path": "./ruleset/Telegram.yaml"
     },
     "GitHub": {
       "type": "http",
@@ -487,7 +487,7 @@ const customConfig = {
     "DOMAIN-SUFFIX,steamcommunity.com,Steam",
     "RULE-SET,apple,DIRECT",
     "RULE-SET,google,Google",
-    "RULE-SET,telegramcidr,Telegram",
+    "RULE-SET,Telegram,Telegram",
     "RULE-SET,direct,DIRECT",
     "GEOSITE,CN,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
