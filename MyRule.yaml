@@ -143,131 +143,131 @@ rule-providers:
     path: ./ruleset/Microsoft.yaml
 proxy-groups:
 
-  - name: "漏网之鱼 [自选]"
+  - name: "漏网之鱼"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
     proxies:
-      - 自动选择 [系统]
-      - "香港节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "美国节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - 自动选择
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "AI服务 [自选]"
+  - name: "AI"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png
     proxies:
-      - "美国节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "香港节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "ChatGPT [自选]"
+  - name: "ChatGPT"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
     proxies:
-      - "美国节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "香港节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "Gemini [自选]"
+  - name: "Gemini"
     type: select
     icon: https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png
     proxies:
-      - "美国节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "香港节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "油管专用 [自选]"
+  - name: "Youtube"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
     proxies:
-      - "香港节点 [系统]"
-      - "美国节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "香港节点"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "Steam 社区 [自选]"
+  - name: "Steam"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
     proxies:
-      - "香港节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "美国节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "谷歌服务 [自选]"
+  - name: "Google"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
     proxies:
-      - "美国节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "香港节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "Pixiv [自选]"
+  - name: "Pixiv"
     type: select
     icon: https://img.icons8.com/color/48/pixiv.png
     proxies:
-      - "香港节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "美国节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "微软服务 [自选]"
+  - name: "Microsoft"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
     proxies:
-      - "香港节点 [系统]"
-      - "日本节点 [系统]"
-      - "新加坡节点 [系统]"
-      - "美国节点 [系统]"
-      - "台湾节点 [系统]"
-      - "其他地区 [系统]"
-      - "全部节点 [系统]"
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
       - DIRECT
 
-  - name: "全部节点 [系统]"
+  - name: "全部节点"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
     include-all-proxies: true
     exclude-type: Direct
 
-  - name: 自动选择 [系统]
+  - name: 自动选择
     type: url-test
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
     include-all-proxies: true
@@ -280,7 +280,7 @@ proxy-groups:
     max-failed-times: 1
     lazy: true
 
-  - name: "香港节点 [系统]"
+  - name: "香港节点"
     type: url-test
     hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
@@ -295,7 +295,7 @@ proxy-groups:
     max-failed-times: 1
     lazy: true
 
-  - name: "日本节点 [系统]"
+  - name: "日本节点"
     type: url-test
     hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
@@ -310,7 +310,7 @@ proxy-groups:
     max-failed-times: 1
     lazy: true
 
-  - name: "新加坡节点 [系统]"
+  - name: "新加坡节点"
     type: url-test
     hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
@@ -325,7 +325,7 @@ proxy-groups:
     max-failed-times: 1
     lazy: true
 
-  - name: "美国节点 [系统]"
+  - name: "美国节点"
     type: url-test
     hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
@@ -340,7 +340,7 @@ proxy-groups:
     max-failed-times: 1
     lazy: true
 
-  - name: "台湾节点 [系统]"
+  - name: "台湾节点"
     type: url-test
     hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
@@ -355,7 +355,7 @@ proxy-groups:
     max-failed-times: 1
     lazy: true
 
-  - name: "其他地区 [系统]"
+  - name: "其他地区"
     type: select
     hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png
@@ -364,7 +364,7 @@ proxy-groups:
     exclude-filter: (?i)官网|流量|剩余|到期|过期|套餐|订阅|重置|traffic|expire|expired|subscription|reset|official|website
     exclude-type: Direct
 
-  - name: "广告拦截 [系统]"
+  - name: "广告拦截"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
     proxies:
@@ -373,8 +373,8 @@ proxy-groups:
 # 规则按从上到下的顺序匹配；具体域名规则放在通用规则之前
 rules:
   # 广告规则优先匹配
-  - "RULE-SET,ads,广告拦截 [系统]"
-  - "RULE-SET,Ad,广告拦截 [系统]"
+  - "RULE-SET,ads,广告拦截"
+  - "RULE-SET,Ad,广告拦截"
 
   # Loyalsoldier 规则中的直连项
   - RULE-SET,applications,DIRECT
@@ -398,39 +398,39 @@ rules:
   - "DOMAIN-SUFFIX,steamusercontent.com,DIRECT"
 
   # Pixiv 及图片、资讯站域名使用可手动选择的 Pixiv 代理组
-  - "DOMAIN-SUFFIX,pixiv.net,Pixiv [自选]"
-  - "DOMAIN-SUFFIX,pximg.net,Pixiv [自选]"
-  - "DOMAIN-SUFFIX,pixivision.net,Pixiv [自选]"
+  - "DOMAIN-SUFFIX,pixiv.net,Pixiv"
+  - "DOMAIN-SUFFIX,pximg.net,Pixiv"
+  - "DOMAIN-SUFFIX,pixivision.net,Pixiv"
 
   # ChatGPT / OpenAI 独立选择地区
-  - "RULE-SET,chatgpt,ChatGPT [自选]"
+  - "RULE-SET,chatgpt,ChatGPT"
 
   # Gemini / Google AI 使用仓库规则集，独立选择地区
-  - "RULE-SET,google-ai,Gemini [自选]"
+  - "RULE-SET,google-ai,Gemini"
 
   # 国内 AI 服务直连
   - "RULE-SET,ai-cn,DIRECT"
 
   # 其余海外 AI 服务走通用 AI 代理组
-  - "RULE-SET,ai-global,AI服务 [自选]"
+  - "RULE-SET,ai-global,AI服务"
 
   # Bing 单独走微软代理组，优先于微软应用直连规则
-  - "RULE-SET,Bing,微软服务 [自选]"
+  - "RULE-SET,Bing,微软服务"
 
   # 其他中国区微软服务直连；Windows 更新、商店、Office 等规则也直连
   - GEOSITE,microsoft@cn,DIRECT
   - RULE-SET,MicrosoftAPPs,DIRECT
 
   # 其余微软服务走微软代理组
-  - "RULE-SET,Microsoft,微软服务 [自选]"
+  - "RULE-SET,Microsoft,微软服务"
 
   # 其他单独指定的代理服务
-  - "DOMAIN,api.assrt.net,漏网之鱼 [自选]"
-  - "RULE-SET,youtube,油管专用 [自选]"
-  - "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区 [自选]"
-  - "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区 [自选]"
+  - "DOMAIN,api.assrt.net,漏网之鱼"
+  - "RULE-SET,youtube,油管专用"
+  - "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区"
+  - "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区"
   - RULE-SET,apple,DIRECT
-  - "RULE-SET,google,谷歌服务 [自选]"
+  - "RULE-SET,google,谷歌服务"
 
   # 通用直连规则与中国区兜底规则放在单项分流之后
   - RULE-SET,direct,DIRECT
@@ -439,4 +439,4 @@ rules:
   - GEOIP,CN,DIRECT,no-resolve
 
   # 未匹配规则由漏网之鱼代理组自选
-  - "MATCH,漏网之鱼 [自选]"
+  - "MATCH,漏网之鱼"
