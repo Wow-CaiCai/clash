@@ -118,6 +118,14 @@ rule-providers:
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
     path: ./ruleset/lancidr.yaml
 
+  GitHub:
+    type: http
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
+    path: ./ruleset/GitHub.yaml
+
   Bing:
     type: http
     behavior: classical
@@ -247,6 +255,19 @@ proxy-groups:
       - "其他地区"
       - "全部节点"
       - DIRECT
+
+  - name: "GitHub"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/GitHub.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
+      - "DIRECT"
 
   - name: "Microsoft"
     type: select
@@ -413,6 +434,9 @@ rules:
 
   # 其余海外 AI 服务走通用 AI 代理组
   - "RULE-SET,ai-global,AI"
+
+  # GitHub 及 npm 使用仓库规则集；Copilot 优先使用前面的 AI 规则
+  - "RULE-SET,GitHub,GitHub"
 
   # Bing 单独走微软代理组，优先于微软应用直连规则
   - "RULE-SET,Bing,Microsoft"

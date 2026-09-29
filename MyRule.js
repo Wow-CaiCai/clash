@@ -122,6 +122,14 @@ const customConfig = {
       "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
       "path": "./ruleset/lancidr.yaml"
     },
+    "GitHub": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml",
+      "path": "./ruleset/GitHub.yaml"
+    },
     "Bing": {
       "type": "http",
       "behavior": "classical",
@@ -258,6 +266,21 @@ const customConfig = {
       "name": "Pixiv",
       "type": "select",
       "icon": "https://img.icons8.com/color/48/pixiv.png",
+      "proxies": [
+        "香港节点",
+        "日本节点",
+        "新加坡节点",
+        "美国节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
+        "DIRECT"
+      ]
+    },
+    {
+      "name": "GitHub",
+      "type": "select",
+      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/GitHub.png",
       "proxies": [
         "香港节点",
         "日本节点",
@@ -430,6 +453,7 @@ const customConfig = {
     "RULE-SET,google-ai,Gemini",
     "RULE-SET,ai-cn,DIRECT",
     "RULE-SET,ai-global,AI",
+    "RULE-SET,GitHub,GitHub",
     "RULE-SET,Bing,Microsoft",
     "GEOSITE,microsoft@cn,DIRECT",
     "RULE-SET,MicrosoftAPPs,DIRECT",
