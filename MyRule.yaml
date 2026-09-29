@@ -75,9 +75,9 @@ rule-providers:
     path: ./ruleset/Microsoft.yaml
 proxy-groups:
 
-  - name: "默认代理 [自选]"
+  - name: "漏网之鱼 [自选]"
     type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
     proxies:
       - 自动选择 [系统]
       - "香港节点 [系统]"
@@ -87,6 +87,7 @@ proxy-groups:
       - "台湾节点 [系统]"
       - "其他地区 [系统]"
       - "全部节点 [系统]"
+      - DIRECT
 
   - name: "AI服务 [自选]"
     type: select
@@ -226,6 +227,7 @@ proxy-groups:
 
   - name: "香港节点 [系统]"
     type: url-test
+    hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     include-all-proxies: true
     filter: "(?i)\U0001F1ED\U0001F1F0|香港|港|\\bHK\\b|\\bHKG\\b|Hong[ -]?Kong"
@@ -240,6 +242,7 @@ proxy-groups:
 
   - name: "日本节点 [系统]"
     type: url-test
+    hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
     include-all-proxies: true
     filter: "(?i)\U0001F1EF\U0001F1F5|日本|日|\\bJP\\b|\\bJPN\\b|Japan|Tokyo|Osaka"
@@ -254,6 +257,7 @@ proxy-groups:
 
   - name: "新加坡节点 [系统]"
     type: url-test
+    hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
     include-all-proxies: true
     filter: "(?i)\U0001F1F8\U0001F1EC|新加坡|新国|\\bSG\\b|\\bSGP\\b|Singapore"
@@ -268,6 +272,7 @@ proxy-groups:
 
   - name: "美国节点 [系统]"
     type: url-test
+    hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
     include-all-proxies: true
     filter: "(?i)\U0001F1FA\U0001F1F8|美国|美|\\bUS\\b|\\bUSA\\b|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco"
@@ -282,6 +287,7 @@ proxy-groups:
 
   - name: "台湾节点 [系统]"
     type: url-test
+    hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
     include-all-proxies: true
     filter: "(?i)\U0001F1F9\U0001F1FC|台湾|台|\\bTW\\b|\\bTWN\\b|Taiwan|Taipei"
@@ -296,6 +302,7 @@ proxy-groups:
 
   - name: "其他地区 [系统]"
     type: select
+    hidden: true
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png
     include-all-proxies: true
     filter: "(?i)^(?!.*(?:\U0001F1ED\U0001F1F0|\U0001F1EF\U0001F1F5|\U0001F1F8\U0001F1EC|\U0001F1FA\U0001F1F8|\U0001F1F9\U0001F1FC|香港|日本|新加坡|美国|台湾|\\bHK\\b|\\bHKG\\b|\\bJP\\b|\\bJPN\\b|\\bSG\\b|\\bSGP\\b|\\bUS\\b|\\bUSA\\b|\\bTW\\b|\\bTWN\\b|Hong[ -]?Kong|Japan|Tokyo|Osaka|Singapore|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco|Taiwan|Taipei)).*"
@@ -358,7 +365,7 @@ rules:
   - "RULE-SET,Microsoft,微软服务 [自选]"
 
   # 其他单独指定的代理服务
-  - "DOMAIN,api.assrt.net,默认代理 [自选]"
+  - "DOMAIN,api.assrt.net,漏网之鱼 [自选]"
   - "RULE-SET,youtube,油管专用 [自选]"
   - "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区 [自选]"
   - "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区 [自选]"
@@ -370,5 +377,5 @@ rules:
   - GEOSITE,CN,DIRECT
   - GEOIP,CN,DIRECT,no-resolve
 
-  # 未匹配规则默认使用默认代理组
-  - "MATCH,默认代理 [自选]"
+  # 未匹配规则由漏网之鱼代理组自选
+  - "MATCH,漏网之鱼 [自选]"

@@ -81,9 +81,9 @@ const customConfig = {
   },
   "proxy-groups": [
     {
-      "name": "默认代理 [自选]",
+      "name": "漏网之鱼 [自选]",
       "type": "select",
-      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png",
+      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png",
       "proxies": [
         "自动选择 [系统]",
         "香港节点 [系统]",
@@ -92,7 +92,8 @@ const customConfig = {
         "美国节点 [系统]",
         "台湾节点 [系统]",
         "其他地区 [系统]",
-        "全部节点 [系统]"
+        "全部节点 [系统]",
+        "DIRECT"
       ]
     },
     {
@@ -254,6 +255,7 @@ const customConfig = {
     {
       "name": "香港节点 [系统]",
       "type": "url-test",
+      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png",
       "include-all-proxies": true,
       "filter": "(?i)🇭🇰|香港|港|\\bHK\\b|\\bHKG\\b|Hong[ -]?Kong",
@@ -269,6 +271,7 @@ const customConfig = {
     {
       "name": "日本节点 [系统]",
       "type": "url-test",
+      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png",
       "include-all-proxies": true,
       "filter": "(?i)🇯🇵|日本|日|\\bJP\\b|\\bJPN\\b|Japan|Tokyo|Osaka",
@@ -284,6 +287,7 @@ const customConfig = {
     {
       "name": "新加坡节点 [系统]",
       "type": "url-test",
+      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png",
       "include-all-proxies": true,
       "filter": "(?i)🇸🇬|新加坡|新国|\\bSG\\b|\\bSGP\\b|Singapore",
@@ -299,6 +303,7 @@ const customConfig = {
     {
       "name": "美国节点 [系统]",
       "type": "url-test",
+      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png",
       "include-all-proxies": true,
       "filter": "(?i)🇺🇸|美国|美|\\bUS\\b|\\bUSA\\b|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco",
@@ -314,6 +319,7 @@ const customConfig = {
     {
       "name": "台湾节点 [系统]",
       "type": "url-test",
+      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png",
       "include-all-proxies": true,
       "filter": "(?i)🇹🇼|台湾|台|\\bTW\\b|\\bTWN\\b|Taiwan|Taipei",
@@ -329,6 +335,7 @@ const customConfig = {
     {
       "name": "其他地区 [系统]",
       "type": "select",
+      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png",
       "include-all-proxies": true,
       "filter": "(?i)^(?!.*(?:🇭🇰|🇯🇵|🇸🇬|🇺🇸|🇹🇼|香港|日本|新加坡|美国|台湾|\\bHK\\b|\\bHKG\\b|\\bJP\\b|\\bJPN\\b|\\bSG\\b|\\bSGP\\b|\\bUS\\b|\\bUSA\\b|\\bTW\\b|\\bTWN\\b|Hong[ -]?Kong|Japan|Tokyo|Osaka|Singapore|United[ -]?States|America|Los[ -]?Angeles|New[ -]?York|San[ -]?Francisco|Taiwan|Taipei)).*",
@@ -375,7 +382,7 @@ const customConfig = {
     "GEOSITE,microsoft@cn,DIRECT",
     "RULE-SET,MicrosoftAPPs,DIRECT",
     "RULE-SET,Microsoft,微软服务 [自选]",
-    "DOMAIN,api.assrt.net,默认代理 [自选]",
+    "DOMAIN,api.assrt.net,漏网之鱼 [自选]",
     "RULE-SET,youtube,油管专用 [自选]",
     "DOMAIN-SUFFIX,store.steampowered.com,Steam 社区 [自选]",
     "DOMAIN-SUFFIX,steamcommunity.com,Steam 社区 [自选]",
@@ -384,7 +391,7 @@ const customConfig = {
     "RULE-SET,direct,DIRECT",
     "GEOSITE,CN,DIRECT",
     "GEOIP,CN,DIRECT,no-resolve",
-    "MATCH,默认代理 [自选]"
+    "MATCH,漏网之鱼 [自选]"
   ]
 };
 
