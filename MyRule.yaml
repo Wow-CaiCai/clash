@@ -118,6 +118,14 @@ rule-providers:
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
     path: ./ruleset/lancidr.yaml
 
+  telegramcidr:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
+    path: ./ruleset/telegramcidr.yaml
+
   GitHub:
     type: http
     behavior: classical
@@ -255,6 +263,19 @@ proxy-groups:
       - "其他地区"
       - "全部节点"
       - DIRECT
+
+  - name: "Telegram"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "全部节点"
+      - "DIRECT"
 
   - name: "GitHub"
     type: select
@@ -455,6 +476,9 @@ rules:
   - "DOMAIN-SUFFIX,steamcommunity.com,Steam"
   - RULE-SET,apple,DIRECT
   - "RULE-SET,google,Google"
+
+  # Telegram IP 地址使用 Loyalsoldier 仓库规则集
+  - "RULE-SET,telegramcidr,Telegram"
 
   # 通用直连规则与中国区兜底规则放在单项分流之后
   - RULE-SET,direct,DIRECT
