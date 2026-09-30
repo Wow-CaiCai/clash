@@ -377,7 +377,6 @@ const customConfig = {
     {
       "name": "香港节点",
       "type": "url-test",
-      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png",
       "include-all-proxies": true,
       "filter": "^(?:🇭🇰)?香港",
@@ -393,7 +392,6 @@ const customConfig = {
     {
       "name": "日本节点",
       "type": "url-test",
-      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png",
       "include-all-proxies": true,
       "filter": "^(?:🇯🇵)?日本",
@@ -409,7 +407,6 @@ const customConfig = {
     {
       "name": "新加坡节点",
       "type": "url-test",
-      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png",
       "include-all-proxies": true,
       "filter": "^(?:🇸🇬)?新加坡",
@@ -425,7 +422,6 @@ const customConfig = {
     {
       "name": "美国节点",
       "type": "url-test",
-      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png",
       "include-all-proxies": true,
       "filter": "^(?:🇺🇸)?美国",
@@ -441,7 +437,6 @@ const customConfig = {
     {
       "name": "台湾节点",
       "type": "url-test",
-      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png",
       "include-all-proxies": true,
       "filter": "^(?:🇨🇳|🇹🇼)?台湾",
@@ -457,7 +452,6 @@ const customConfig = {
     {
       "name": "其他地区",
       "type": "select",
-      "hidden": true,
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png",
       "include-all-proxies": true,
       "filter": "^(?!(?:(?:🇭🇰)?香港|(?:🇯🇵)?日本|(?:🇸🇬)?新加坡|(?:🇺🇸)?美国|(?:🇨🇳|🇹🇼)?台湾)).+",
