@@ -433,6 +433,13 @@ rules:
   - "RULE-SET,ads,广告拦截"
   - "RULE-SET,Ad,广告拦截"
 
+  # Blip 跨平台直连：官网、生产服务、传输中继及日志等全部子域名
+  - "DOMAIN-SUFFIX,blip.net,DIRECT"
+  # Windows / macOS / Android 的进程规则覆盖无域名的设备间连接
+  - "PROCESS-NAME,Blip.exe,DIRECT"
+  - "PROCESS-NAME,Blip,DIRECT"
+  - "PROCESS-NAME,net.blip.android,DIRECT"
+
   # Loyalsoldier 规则中的直连项
   - RULE-SET,applications,DIRECT
   - DOMAIN,clash.razord.top,DIRECT

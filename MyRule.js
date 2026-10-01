@@ -471,6 +471,11 @@ const customConfig = {
   "rules": [
     "RULE-SET,ads,广告拦截",
     "RULE-SET,Ad,广告拦截",
+    // Blip domains apply across platforms; process rules cover IP-only transfers.
+    "DOMAIN-SUFFIX,blip.net,DIRECT",
+    "PROCESS-NAME,Blip.exe,DIRECT",
+    "PROCESS-NAME,Blip,DIRECT",
+    "PROCESS-NAME,net.blip.android,DIRECT",
     "RULE-SET,applications,DIRECT",
     "DOMAIN,clash.razord.top,DIRECT",
     "DOMAIN,yacd.haishan.me,DIRECT",
