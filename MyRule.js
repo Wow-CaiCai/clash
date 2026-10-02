@@ -505,7 +505,7 @@ const customConfig = {
     "RULE-SET,Microsoft,Microsoft",
     "DOMAIN,api.assrt.net,漏网之鱼",
     "RULE-SET,youtube,Youtube",
-    "DOMAIN-SUFFIX,store.steampowered.com,Steam",
+    "DOMAIN-SUFFIX,steampowered.com,Steam",
     "DOMAIN-SUFFIX,steamcommunity.com,Steam",
     "RULE-SET,apple,DIRECT",
     "RULE-SET,google,Google",

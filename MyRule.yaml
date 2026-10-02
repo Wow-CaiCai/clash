@@ -494,7 +494,7 @@ rules:
   # 其他单独指定的代理服务
   - "DOMAIN,api.assrt.net,漏网之鱼"
   - "RULE-SET,youtube,Youtube"
-  - "DOMAIN-SUFFIX,store.steampowered.com,Steam"
+  - "DOMAIN-SUFFIX,steampowered.com,Steam"
   - "DOMAIN-SUFFIX,steamcommunity.com,Steam"
   - RULE-SET,apple,DIRECT
   - "RULE-SET,google,Google"
