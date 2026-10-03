@@ -478,9 +478,6 @@ rules:
   - "DOMAIN,steamcdn-a.akamaihd.net,DIRECT"
   - "DOMAIN-SUFFIX,steamserver.net,DIRECT"
   - "DOMAIN-SUFFIX,steamcontent.com,DIRECT"
-  - "DOMAIN-SUFFIX,steamstatic.com,DIRECT"
-  - "DOMAIN-SUFFIX,steamusercontent.com,DIRECT"
-
   # Pixiv 及图片、资讯站域名使用可手动选择的 Pixiv 代理组
   - "DOMAIN-SUFFIX,pixiv.net,Pixiv"
   - "DOMAIN-SUFFIX,pximg.net,Pixiv"
@@ -517,6 +514,8 @@ rules:
   - "RULE-SET,TikTok,TikTok"
   - "DOMAIN-SUFFIX,steampowered.com,Steam"
   - "DOMAIN-SUFFIX,steamcommunity.com,Steam"
+  - "DOMAIN-SUFFIX,steamstatic.com,Steam"
+  - "DOMAIN-SUFFIX,steamusercontent.com,Steam"
   - RULE-SET,apple,DIRECT
   - "RULE-SET,google,Google"
 
