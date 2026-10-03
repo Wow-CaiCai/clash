@@ -122,6 +122,14 @@ const customConfig = {
       "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
       "path": "./ruleset/lancidr.yaml"
     },
+    "TikTok": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "interval": 86400,
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml",
+      "path": "./ruleset/TikTok.yaml"
+    },
     "Twitter": {
       "type": "http",
       "behavior": "classical",
@@ -242,6 +250,20 @@ const customConfig = {
         "美国节点",
         "日本节点",
         "新加坡节点",
+        "台湾节点",
+        "其他地区",
+        "全部节点",
+        "DIRECT"
+      ]
+    },
+    {
+      "name": "TikTok",
+      "type": "select",
+      "proxies": [
+        "美国节点",
+        "日本节点",
+        "新加坡节点",
+        "香港节点",
         "台湾节点",
         "其他地区",
         "全部节点",
@@ -505,6 +527,7 @@ const customConfig = {
     "RULE-SET,Microsoft,Microsoft",
     "DOMAIN,api.assrt.net,漏网之鱼",
     "RULE-SET,youtube,Youtube",
+    "RULE-SET,TikTok,TikTok",
     "DOMAIN-SUFFIX,steampowered.com,Steam",
     "DOMAIN-SUFFIX,steamcommunity.com,Steam",
     "RULE-SET,apple,DIRECT",
