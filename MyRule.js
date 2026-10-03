@@ -260,10 +260,10 @@ const customConfig = {
       "name": "TikTok",
       "type": "select",
       "proxies": [
+        "香港节点",
         "美国节点",
         "日本节点",
         "新加坡节点",
-        "香港节点",
         "台湾节点",
         "其他地区",
         "全部节点",
