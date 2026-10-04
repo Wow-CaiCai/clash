@@ -259,6 +259,7 @@ const customConfig = {
     {
       "name": "TikTok",
       "type": "select",
+      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png",
       "proxies": [
         "香港节点",
         "美国节点",
