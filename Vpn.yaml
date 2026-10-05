@@ -1,0 +1,1991 @@
+# 多机场订阅 + MyRule 分流（适用于近期版本的 Mihomo / Clash Meta 内核）
+# 使用步骤：
+# 1. 机场A / 机场B 使用在线订阅；机场C 已内置 87 个条目（85 个实际节点），无需临时订阅链接。
+#    更换 A / B 时替换整个 url；更新 C 时替换其 payload 中的节点。
+#    未使用的机场请删除对应 provider；各分组会自动引入所有 provider。
+# 2. 将本文件作为独立本地配置导入，启用客户端 TUN / VPN 模式及必要的服务权限。
+#    本文件含订阅令牌和节点认证信息，请勿公开分享或提交到公开仓库。
+# 3. 导入时不要再叠加会覆盖 DNS、TUN 或分组的全局覆写。
+# 4. macOS / Windows 的 TUN 不一定能接管发往局域网路由器的 DNS。
+#    如客户端未自动设置系统 DNS，请将当前网卡 DNS 设为 127.0.0.1（本 DNS 服务监听 53）。
+#    若 53 端口被其他 DNS 服务占用，需要先解决冲突；不要仅改监听端口后继续使用上述网卡设置。
+#    如果需要解析 NAS 等局域网名称，网卡 DNS 指向本机后，须将下方局域网策略中的 system
+#    换为实际路由器的 DNS 地址，避免系统 DNS 再次指向本机而形成回环。
+# 5. 浏览器内置安全 DNS、系统私人 DNS 和其他 VPN 可能绕过普通 53 端口接管。
+#    建议关闭浏览器内置安全 DNS，统一交给本配置解析；本文件不修改系统网络设置。
+# DNS 设计：国内 / 直连域名使用国内 DoH；其他域名使用经 DNS代理 组传输的海外 DoH。
+# 引导解析和节点入口解析也使用 DoH；仅局域网名称显式交给系统 DNS。
+# 此设计兼顾国内访问速度与海外查询隐私，不保证任何客户端 / 系统下绝对零泄露。
+# 分流规则与规则来源复制自 MyRule.yaml；后续修改 MyRule.yaml 不会自动同步到本文件。
+
+mixed-port: 7890
+allow-lan: false
+bind-address: 127.0.0.1
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: strict
+# 接管 IPv6 流量；DNS 下方不返回 AAAA，常规域名访问优先使用 IPv4。
+ipv6: true
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# MyRule 使用 GEOSITE / GEOIP；使用官方维护的数据文件，避免依赖系统 DNS 做引导。
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
+  geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
+
+# 生效需要客户端提供 TUN / VPN 权限。创建本文件不会开启系统 TUN。
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  inet6-address:
+    - fdfe:dcba:9876::1/126
+  route-address:
+    - 0.0.0.0/0
+    - "::/0"
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+
+dns:
+  enable: true
+  listen: 127.0.0.1:53
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - localhost
+    - "+.localhost"
+    - "+.lan"
+    - "+.local"
+    - "+.home.arpa"
+  use-hosts: true
+  use-system-hosts: true
+  cache-algorithm: arc
+  respect-rules: true
+  prefer-h3: false
+  # IP 地址形式的 DoH，建立加密 DNS 连接时无需先通过明文 DNS 查询服务器域名。
+  default-nameserver:
+    - "https://223.5.5.5/dns-query#DIRECT"
+    - "https://223.6.6.6/dns-query#DIRECT"
+  # 订阅入口解析独立直连，避免先连代理才能解析代理入口的循环依赖。
+  proxy-server-nameserver:
+    - "https://223.5.5.5/dns-query#DIRECT"
+    - "https://223.6.6.6/dns-query#DIRECT"
+  # MyRule 判定为 DIRECT 的连接使用国内加密 DNS，有利于 CDN 就近分配。
+  direct-nameserver:
+    - "https://223.5.5.5/dns-query#DIRECT"
+    - "https://223.6.6.6/dns-query#DIRECT"
+  direct-nameserver-follow-policy: false
+  # 默认查询强制经过独立代理组；没有可用节点时不回退到直连 DNS。
+  nameserver:
+    - "https://1.1.1.1/dns-query#DNS代理"
+    - "https://8.8.8.8/dns-query#DNS代理"
+  nameserver-policy:
+    "geosite:cn":
+      - "https://223.5.5.5/dns-query#DIRECT"
+      - "https://223.6.6.6/dns-query#DIRECT"
+    # 局域网名称是有意保留的例外，防止 NAS / 打印机名称被发送到公网 DNS。
+    # system 必须指向实际局域网 DNS；若系统 DNS 已改为本机，将其替换为路由器 DNS IP。
+    "+.localhost": system
+    "+.lan": system
+    "+.local": system
+    "+.home.arpa": system
+
+# 扩展机场时复制一个条目，使用唯一名称、缓存路径和前缀即可。
+# provider 保留原始节点条目；节点过滤统一在后面的代理组中设置。
+# 机场A 为良心云，机场B 为魔戒；机场C 为三元店的静态节点集合。
+proxy-providers:
+  机场A:
+    type: http
+    url: "https://liangxin.xyz/api/v1/liangxin?OwO=568a8fa6566a6a365d2fc182cdc8e4bf"
+    path: ./proxy-providers/airport-a.yaml
+    interval: 3600
+    # 订阅下载走直连，首次加载不依赖尚未导入的代理。
+    proxy: DIRECT
+    override:
+      additional-prefix: "[良心云] "
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 300
+      timeout: 5000
+      lazy: true
+      expected-status: 204
+  机场B:
+    type: http
+    url: "https://47.242.128.61:5000/api/v1/client/subscribe?token=b0fe987c39c091069d99423606204662"
+    path: ./proxy-providers/airport-b.yaml
+    interval: 3600
+    proxy: DIRECT
+    override:
+      additional-prefix: "[魔戒] "
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 300
+      timeout: 5000
+      lazy: true
+      expected-status: 204
+
+  机场C:
+    type: inline
+    override:
+      additional-prefix: "[三元店] "
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 300
+      timeout: 5000
+      lazy: true
+      expected-status: 204
+    # 保留三元店原始 87 个条目（85 个实际节点）；流量和到期信息由代理组过滤。
+    # 服务商变更节点参数时需重新提取。
+    payload:
+      -
+        name: "📊 剩余流量: 150.04 GB / 150.04 GB"
+        type: vless
+        server: "127.0.0.1"
+        port: 80
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        udp: false
+
+      -
+        name: "🕒 到期时间: 2026-11-05 01:01"
+        type: vless
+        server: "127.0.0.1"
+        port: 80
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        udp: false
+
+      -
+        name: "🇭🇰香港高速无限1-永久官网https://syjc.xyz"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 12345
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港高速无限2-流媒体解锁"
+        type: vless
+        server: "hkzz.syjc.xyz"
+        port: 12346
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "S36tKKrSodR79b7Ewbz6Qx_U1CtOetIsks9gCHQbqRQ"
+          short-id: "2d0100eb"
+
+      -
+        name: "🇭🇰VIP香港高速无限3-流媒体解锁"
+        type: vless
+        server: "hkzz.syjc.xyz"
+        port: 12347
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "m37NvydwP51-iwsCBqQm_ZKl1FlwCBVvroARk9KlcUk"
+          short-id: "e6021f9f"
+
+      -
+        name: "🇸🇬新加坡高速无限4-全部新加坡流媒体解锁"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40011
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵日本高速无限5-全部日本流媒体解锁"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40012
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇨🇳台湾高速无限6-全部台湾流媒体解锁"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40013
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰VIP香港高速无限8-流媒体解锁"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40015
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港高速无限10-流媒体解锁"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40017
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国高速5-最具性价比的家宽机场"
+        type: vless
+        server: "usgs5.sanyuan.cyou"
+        port: 35675
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "Aai-Z-Z-7y1CY67slr4sPsFPAP08mB50vinST45iHRg"
+          short-id: "09e32b8c"
+
+      -
+        name: "🇺🇸VIP美国高速6-流媒体解锁"
+        type: vless
+        server: "usgs6.sanyuan.cyou"
+        port: 25443
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "4O0ufcjo_S5aq_wFk93SkONbGMEtChjhFh1XqjXSDyQ"
+          short-id: "9b52cb18"
+
+      -
+        name: "🇺🇸VIP美国高速7-流媒体解锁"
+        type: hysteria2
+        server: "usgs7.sanyuan.cyou"
+        port: 60443
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵日本4-流媒体解锁"
+        type: vless
+        server: "jp04.sanyuan.cyou"
+        port: 25634
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "tTURb33uXeFW2UUyhroInoQu5xNCRHNTWxjS7P3l5C8"
+          short-id: "b3ba19cc"
+
+      -
+        name: "🇭🇰香港4K20W纯IPV6防失联节点"
+        type: vless
+        server: "hkv6.sanyuan.cyou"
+        port: 42351
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "pVQLwqzGJEutGwPtyNgNg1TLLWagFwTBbAW9VXr_zQo"
+          short-id: "6fb44c2f"
+
+      -
+        name: "🇹🇭VIP泰国3-泰国ip无法访问官网"
+        type: vless
+        server: "th3.sanyuan.cyou"
+        port: 21443
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "8Pm8CpXmy9Jhf99GZ29FJS1DSFajZtd0hGGdh1xg_CA"
+          short-id: "378a392a"
+
+      -
+        name: "🇹🇭VIP泰国4-泰国ip无法访问官网"
+        type: vless
+        server: "th4.sanyuan.cyou"
+        port: 60449
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "YWi_4S6jEzV63XqMMjiQ4BjqYFEoj6wE1xRVQBKKc1U"
+          short-id: "ce3d6bb1"
+
+      -
+        name: "🇹🇭VIP泰国5-泰国ip无法访问官网"
+        type: vless
+        server: "th5.sanyuan.cyou"
+        port: 60500
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "yCeqO-avMh-IO5J0QlsFc5OsRXfrmH52E3fTCzH6504"
+          short-id: "25eabe70"
+
+      -
+        name: "🇹🇭泰国6-泰国ip无法访问官网"
+        type: vless
+        server: "th6.sanyuan.cyou"
+        port: 60501
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "PX60nSiO6vK0-F1iB34T2cKsc2EXlS-kNEiHf2MYAxs"
+          short-id: "bfc30573"
+
+      -
+        name: "🇱🇻拉托维亚"
+        type: hysteria2
+        server: "lt.sanyuan.cyou"
+        port: 51243
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇳🇱荷兰3-流媒体解锁4K20W"
+        type: hysteria2
+        server: "hl3.sanyuan.cyou"
+        port: 43443
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇳🇱荷兰4-流媒体解锁4K20W"
+        type: hysteria2
+        server: "hl4.sanyuan.cyou"
+        port: 57443
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰VIP香港1-流媒体解锁"
+        type: vless
+        server: "hk01.sanyuan.cyou"
+        port: 59812
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "PD5QeOdcaFLJyIc1tbfyY0hH7Y4DcylhnlDJcc2hO2I"
+          short-id: "d559e952"
+
+      -
+        name: "🇭🇰香港11-5Gbps"
+        type: vless
+        server: "hk11.sanyuan.cyou"
+        port: 23145
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "HndQeHeEbO1Q8xOxWthL3KpjYvBfqFUNLD1LquqoNy4"
+          short-id: "8044b0fc"
+
+      -
+        name: "🇭🇰香港13-5Gbps"
+        type: hysteria2
+        server: "hk13.sanyuan.cyou"
+        port: 25653
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港12-移动优化"
+        type: vless
+        server: "hk12.sanyuan.cyou"
+        port: 23570
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "lcqPwlOKKMo8WuyGuVS_nqtiHF_YwenwJi253wsvzyo"
+          short-id: "6a04d456"
+
+      -
+        name: "🇯🇵日本3-流媒体解锁"
+        type: vless
+        server: "jp03.sanyuan.cyou"
+        port: 23489
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "bgOAObJh_oTyBRGc4jfEMLpDNdqaJU1jwri_2qor0wA"
+          short-id: "c54bf403"
+
+      -
+        name: "🇯🇵日本9"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40004
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵VIP日本11-三网优化"
+        type: vless
+        server: "jp11.sanyuan.cyou"
+        port: 41213
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "dyqV1YjCgPwVfieRFMEsx8F0ivH61H5uFF18zTKZsnU"
+          short-id: "c852da42"
+
+      -
+        name: "🇯🇵VIP日本13-三网优化流媒体解锁"
+        type: hysteria2
+        server: "jp13.sanyuan.cyou"
+        port: 40143
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵日本14-三网优化"
+        type: hysteria2
+        server: "jp14.sanyuan.cyou"
+        port: 42431
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港无限7-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40014
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇵🇭菲律宾7924-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25677
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇲🇾马来西亚7923-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25680
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇦乌克兰7929-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25678
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇨🇦加拿大7936-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25676
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国7932-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25682
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国7-家宽动态住宅IP"
+        type: hysteria2
+        server: "us7.sanyuan.cyou"
+        port: 45641
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国10-家宽动态住宅IP"
+        type: hysteria2
+        server: "us10.sanyuan.cyou"
+        port: 52221
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵日本7920-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25674
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵VIP日本5-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 52332
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵日本10-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40001
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇧🇷巴西10-家宽动态住宅IP"
+        type: hysteria2
+        server: "jp10.sanyuan.cyou"
+        port: 44387
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇮🇩印度尼西亚家宽"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25683
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇮🇩印度尼西亚7-家宽动态住宅IP"
+        type: hysteria2
+        server: "jp7.sanyuan.cyou"
+        port: 63561
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇰🇷韩国7926-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25675
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇰🇷韩国8-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40003
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇹🇭泰国7927-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25681
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇹🇭泰国2-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40023
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇨🇳台湾3-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 52333
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇻🇳VIP越南2-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 58886
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇻🇳越南3-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40020
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇻🇳越南7931-家宽动态住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 25679
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇳🇬尼日利亚-家宽住宅IP"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 31402
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵日本2-流媒体解锁"
+        type: hysteria2
+        server: "jp2.sanyuan.cyou"
+        port: 57893
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵VIP日本06-流媒体解锁"
+        type: hysteria2
+        server: "jp06.sanyuan.cyou"
+        port: 52300
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇯🇵VIP日本08"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 49659
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇲🇴澳门"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40005
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国高速2"
+        type: hysteria2
+        server: "usgs2.sanyuan.cyou"
+        port: 49991
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸VIP美国高速3"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40007
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国高速4"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40022
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸VIP美国1-流媒体解锁"
+        type: hysteria2
+        server: "us01.sanyuan.cyou"
+        port: 44321
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸VIP美国2-流媒体解锁"
+        type: hysteria2
+        server: "us02.sanyuan.cyou"
+        port: 23443
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国4-流媒体解锁"
+        type: hysteria2
+        server: "us4.sanyuan.cyou"
+        port: 44323
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国8-流媒体解锁"
+        type: hysteria2
+        server: "us8.sanyuan.cyou"
+        port: 35677
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇺🇸美国9-流媒体解锁"
+        type: hysteria2
+        server: "us09.sanyuan.cyou"
+        port: 35644
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港3"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 52334
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港9"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 22222
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇰🇷韩国3-流媒体解锁"
+        type: hysteria2
+        server: "kr3.sanyuan.cyou"
+        port: 56551
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇨🇳VIP台湾7-流媒体解锁"
+        type: hysteria2
+        server: "tw7.sanyuan.cyou"
+        port: 31823
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇨🇳台湾8-流媒体解锁"
+        type: hysteria2
+        server: "tw8.sanyuan.cyou"
+        port: 23451
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇸🇬新加坡5"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 42143
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇸🇬VIP新加坡6-该节点无法访问官网"
+        type: vless
+        server: "hkzz.syjc.xyz"
+        port: 49658
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "WVAyuGmN576GZ6EPVbImwbbjCb7QdQMIzjGuo1caWzg"
+          short-id: "32cb0b0b"
+
+      -
+        name: "🇳🇱荷兰"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 58431
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇳🇱VIP荷兰2-流媒体解锁"
+        type: hysteria2
+        server: "hl02.sanyuan.cyou"
+        port: 40008
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇵🇱波兰"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 53211
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇹🇷土耳其2"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 40021
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇩🇪德国1-流媒体解锁"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 42450
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇩🇪VIP德国5-流媒体解锁"
+        type: hysteria2
+        server: "de05.sanyuan.cyou"
+        port: 40009
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇫🇷法国"
+        type: hysteria2
+        server: "hkzz.syjc.xyz"
+        port: 42453
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇬🇧英国2-流媒体解锁"
+        type: hysteria2
+        server: "uk2.sanyuan.cyou"
+        port: 40019
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇮🇳印度2-流媒体解锁"
+        type: hysteria2
+        server: "in2.sanyuan.cyou"
+        port: 45465
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港-低延迟速度很慢1AI解锁日本"
+        type: vless
+        server: "dx.sanyuan.cyou"
+        port: 24459
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "Y0Q1IcInuhDCDy8wQfVamYDW1GqoIXMcyruh2R_NFWg"
+          short-id: "7fcde4c9"
+
+      -
+        name: "🇭🇰香港-低延迟速度很慢2AI解锁台湾"
+        type: vless
+        server: "dx2.sanyuan.cyou"
+        port: 46731
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "addons.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "z_tWNsw2VEB-sYUce9uXTIC0Z1d_mOp5br90SD1rLGc"
+          short-id: "2ce43638"
+
+      -
+        name: "🇭🇰香港-低延迟速度很慢3AI解锁韩国"
+        type: hysteria2
+        server: "dx3.sanyuan.cyou"
+        port: 37546
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+      -
+        name: "🇭🇰香港-低延迟速度很慢4"
+        type: vless
+        server: "dx4.sanyuan.cyou"
+        port: 12346
+        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        network: tcp
+        packet-encoding: xudp
+        tls: true
+        udp: true
+        skip-cert-verify: false
+        servername: "telemetry.mozilla.org"
+        client-fingerprint: chrome
+        flow: xtls-rprx-vision
+        reality-opts:
+          public-key: "hjDFDgDKdg8Pi-bjInK4UeKAiCR7ywPsEB5c8KpLAwM"
+          short-id: "6defecdd"
+
+      -
+        name: "🇭🇰香港-低延迟速度很慢5"
+        type: hysteria2
+        server: "dx5.sanyuan.cyou"
+        port: 23795
+        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
+        sni: "www.bing.com"
+        skip-cert-verify: true
+        alpn:
+          - h3
+        up: "100 Mbps"
+        down: "300 Mbps"
+
+# 原 MyRule 的规则集、服务分流与规则顺序；原文件保持不变。
+rule-providers:
+
+  ads:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/ads.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
+
+  Ad:
+    type: http
+    proxy: DIRECT
+    behavior: domain
+    format: text
+    interval: 86400
+    url: https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt
+    path: ./ruleset/anti-ad-clash.yaml
+
+  chatgpt:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/chatgpt.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/openai.yaml
+
+  google-ai:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/google-ai.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/google-ai.yaml
+
+  ai-cn:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/ai-cn.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    # 原 jsDelivr 地址检查时返回 404，改为同一仓库的原始地址，规则内容和顺序不变。
+    url: https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/cn.yaml
+
+  ai-global:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/ai-global.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml
+
+  youtube:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/youtube.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml
+
+  apple:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/apple.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml
+
+  google:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/google.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml
+
+  direct:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/direct.yaml
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+
+  applications:
+    type: http
+    proxy: DIRECT
+    path: ./ruleset/applications.yaml
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt
+
+  icloud:
+    type: http
+    proxy: DIRECT
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
+    path: ./ruleset/icloud.yaml
+
+  apple-direct:
+    type: http
+    proxy: DIRECT
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
+    path: ./ruleset/apple-direct.yaml
+
+  private:
+    type: http
+    proxy: DIRECT
+    behavior: domain
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
+    path: ./ruleset/private.yaml
+
+  cncidr:
+    type: http
+    proxy: DIRECT
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
+    path: ./ruleset/cncidr.yaml
+
+  lancidr:
+    type: http
+    proxy: DIRECT
+    behavior: ipcidr
+    format: yaml
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
+    path: ./ruleset/lancidr.yaml
+
+  TikTok:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml
+    path: ./ruleset/TikTok.yaml
+
+  Twitter:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml
+    path: ./ruleset/Twitter.yaml
+
+  Telegram:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
+    path: ./ruleset/Telegram.yaml
+
+  GitHub:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
+    path: ./ruleset/GitHub.yaml
+
+  Bing:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Bing/Bing.yaml
+    path: ./ruleset/Bing.yaml
+
+  MicrosoftAPPs:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/main/MicrosoftAPPs/MicrosoftAPPs.yaml
+    path: ./ruleset/MicrosoftAPPs.yaml
+
+  Microsoft:
+    type: http
+    proxy: DIRECT
+    behavior: classical
+    format: yaml
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml
+    path: ./ruleset/Microsoft.yaml
+proxy-groups:
+
+  - name: "漏网之鱼"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
+    proxies:
+      - 自动选择
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "AI"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png
+    proxies:
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "ChatGPT"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+    proxies:
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "Gemini"
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png
+    proxies:
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "Youtube"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+    proxies:
+      - "香港节点"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "TikTok"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+    proxies:
+      - "香港节点"
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "Steam"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "Google"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+    proxies:
+      - "美国节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "香港节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "Pixiv"
+    type: select
+    icon: https://img.icons8.com/color/48/pixiv.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  - name: "X"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - "DIRECT"
+
+  - name: "Telegram"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - "DIRECT"
+
+  - name: "GitHub"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/GitHub.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - "DIRECT"
+
+  - name: "Microsoft"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
+    proxies:
+      - "香港节点"
+      - "日本节点"
+      - "新加坡节点"
+      - "美国节点"
+      - "台湾节点"
+      - "其他地区"
+      - "家宽IP"
+      - "全部节点"
+      - DIRECT
+
+  # 按订阅名称中的“家宽 / 住宅”标签筛选，不能单凭名称证明出口的真实 IP 类型。
+  # 排除“家宽机场”宣传语；订阅更新后会自动重新归类。
+  # 单一自动选择组，直接在家宽候选中按测试延迟和切换容差选路。
+  - name: "家宽IP"
+    type: url-test
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)家宽|家寬|家庭宽带|家庭寬帶|住宅|住家|residential'
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)|家宽机场|家寬機場'
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 100
+    timeout: 5000
+    max-failed-times: 3
+    lazy: true
+
+  - name: "全部节点"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    exclude-type: Direct
+
+  - name: 自动选择
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    exclude-type: Direct
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "香港节点"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)香港|Hong[ -]?Kong|\bHK\b|🇭🇰'
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "日本节点"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)日本|Japan|\bJP\b|🇯🇵'
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "新加坡节点"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)新加坡|Singapore|\bSG\b|🇸🇬'
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "美国节点"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)美国|美國|United[ -]?States|America|\bUS\b|🇺🇸'
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "台湾节点"
+    type: url-test
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)台湾|台灣|Taiwan|\bTW\b|🇹🇼'
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
+    exclude-type: Direct
+    url: https://cp.cloudflare.com/generate_204
+    interval: 60
+    tolerance: 50
+    timeout: 3000
+    max-failed-times: 1
+    lazy: true
+
+  - name: "其他地区"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png
+    include-all-providers: true
+    empty-fallback: REJECT
+    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)|香港|Hong[ -]?Kong|\bHK\b|🇭🇰|日本|Japan|\bJP\b|🇯🇵|新加坡|Singapore|\bSG\b|🇸🇬|美国|美國|United[ -]?States|America|\bUS\b|🇺🇸|台湾|台灣|Taiwan|\bTW\b|🇹🇼'
+    exclude-type: Direct
+
+  - name: "广告拦截"
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+    proxies:
+      - REJECT
+      - DIRECT
+  # DNS代理不提供 DIRECT 选项，避免服务分组选择直连时也把海外 DNS 带到直连。
+  - name: DNS代理
+    type: select
+    proxies:
+      - 自动选择
+      - "家宽IP"
+      - 全部节点
+
+# 规则按从上到下的顺序匹配；具体域名规则放在通用规则之前
+rules:
+  # 广告规则优先匹配
+  - "RULE-SET,ads,广告拦截"
+  - "RULE-SET,Ad,广告拦截"
+
+  # Blip 跨平台直连：官网、生产服务、传输中继及日志等全部子域名
+  - "DOMAIN-SUFFIX,blip.net,DIRECT"
+  # Windows / macOS / Android 的进程规则覆盖无域名的设备间连接
+  - "PROCESS-NAME,Blip.exe,DIRECT"
+  - "PROCESS-NAME,Blip,DIRECT"
+  - "PROCESS-NAME,net.blip.android,DIRECT"
+
+  # Loyalsoldier 规则中的直连项
+  - RULE-SET,applications,DIRECT
+  - DOMAIN,clash.razord.top,DIRECT
+  - DOMAIN,yacd.haishan.me,DIRECT
+  - RULE-SET,private,DIRECT
+  - RULE-SET,icloud,DIRECT
+  - RULE-SET,apple-direct,DIRECT
+
+  # 私有网络直连
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - RULE-SET,lancidr,DIRECT,no-resolve
+  - GEOIP,LAN,DIRECT,no-resolve
+
+  # Steam 下载与内容分发域名直连
+  - "DOMAIN,steamcdn-a.akamaihd.net,DIRECT"
+  - "DOMAIN-SUFFIX,steamserver.net,DIRECT"
+  - "DOMAIN-SUFFIX,steamcontent.com,DIRECT"
+  # Pixiv 及图片、资讯站域名使用可手动选择的 Pixiv 代理组
+  - "DOMAIN-SUFFIX,pixiv.net,Pixiv"
+  - "DOMAIN-SUFFIX,pximg.net,Pixiv"
+  - "DOMAIN-SUFFIX,pixivision.net,Pixiv"
+
+  # ChatGPT / OpenAI 独立选择地区
+  - "RULE-SET,chatgpt,ChatGPT"
+
+  # Gemini / Google AI 使用仓库规则集，独立选择地区
+  - "RULE-SET,google-ai,Gemini"
+
+  # 国内 AI 服务直连
+  - "RULE-SET,ai-cn,DIRECT"
+
+  # 其余海外 AI 服务走通用 AI 代理组
+  - "RULE-SET,ai-global,AI"
+
+  # GitHub 及 npm 使用仓库规则集；Copilot 优先使用前面的 AI 规则
+  - "RULE-SET,GitHub,GitHub"
+
+  # Bing 单独走微软代理组，优先于微软应用直连规则
+  - "RULE-SET,Bing,Microsoft"
+
+  # 其他中国区微软服务直连；Windows 更新、商店、Office 等规则也直连
+  - GEOSITE,microsoft@cn,DIRECT
+  - RULE-SET,MicrosoftAPPs,DIRECT
+
+  # 其余微软服务走微软代理组
+  - "RULE-SET,Microsoft,Microsoft"
+
+  # 其他单独指定的代理服务
+  - "DOMAIN,api.assrt.net,漏网之鱼"
+  - "RULE-SET,youtube,Youtube"
+  - "RULE-SET,TikTok,TikTok"
+  - "DOMAIN-SUFFIX,steampowered.com,Steam"
+  - "DOMAIN-SUFFIX,steamcommunity.com,Steam"
+  - "DOMAIN-SUFFIX,steamstatic.com,Steam"
+  - "DOMAIN-SUFFIX,steamusercontent.com,Steam"
+  - RULE-SET,apple,DIRECT
+  - "RULE-SET,google,Google"
+
+  # X / Twitter 使用 blackmatrix7 仓库规则集
+  - "RULE-SET,Twitter,X"
+
+  # Telegram 域名、IP 和应用使用 blackmatrix7 仓库规则集
+  - "RULE-SET,Telegram,Telegram"
+
+  # 通用直连规则与中国区兜底规则放在单项分流之后
+  - RULE-SET,direct,DIRECT
+  - GEOSITE,CN,DIRECT
+  - RULE-SET,cncidr,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
+
+  # 未匹配规则由漏网之鱼代理组自选
+  - "MATCH,漏网之鱼"
