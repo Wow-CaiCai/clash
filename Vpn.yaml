@@ -1,7 +1,7 @@
 # 多机场订阅 + MyRule 分流（适用于近期版本的 Mihomo / Clash Meta 内核）
 # 使用步骤：
-# 1. 机场A / 机场B 使用在线订阅；机场C 已内置 87 个条目（85 个实际节点），无需临时订阅链接。
-#    更换 A / B 时替换整个 url；更新 C 时替换其 payload 中的节点。
+# 1. 机场A 使用在线订阅；机场C 已内置 87 个条目（85 个实际节点），无需临时订阅链接。
+#    更换 A 时替换整个 url；更新 C 时替换其 payload 中的节点。
 #    未使用的机场请删除对应 provider；各分组会自动引入所有 provider。
 # 2. 将本文件作为独立本地配置导入，启用客户端 TUN / VPN 模式及必要的服务权限。
 #    本文件含订阅令牌和节点认证信息，请勿公开分享或提交到公开仓库。
@@ -106,7 +106,7 @@ dns:
 
 # 扩展机场时复制一个条目，使用唯一名称、缓存路径和前缀即可。
 # provider 保留原始节点条目；节点过滤统一在后面的代理组中设置。
-# 机场A 为良心云，机场B 为魔戒；机场C 为三元店的静态节点集合。
+# 机场A 为良心云；机场C 为三元店的静态节点集合。
 proxy-providers:
   机场A:
     type: http
@@ -117,21 +117,6 @@ proxy-providers:
     proxy: DIRECT
     override:
       additional-prefix: "[良心云] "
-    health-check:
-      enable: true
-      url: https://cp.cloudflare.com/generate_204
-      interval: 300
-      timeout: 5000
-      lazy: true
-      expected-status: 204
-  机场B:
-    type: http
-    url: "https://47.242.128.61:5000/api/v1/client/subscribe?token=b0fe987c39c091069d99423606204662"
-    path: ./proxy-providers/airport-b.yaml
-    interval: 3600
-    proxy: DIRECT
-    override:
-      additional-prefix: "[魔戒] "
     health-check:
       enable: true
       url: https://cp.cloudflare.com/generate_204
