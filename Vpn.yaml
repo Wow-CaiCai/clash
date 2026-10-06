@@ -1,4 +1,4 @@
-# Last modified: 2026-10-06 17:58:37 (UTC+08:00)
+# Last modified: 2026-10-07 01:27:38 (UTC+08:00)
 # 多机场订阅 + MyRule 分流（适用于近期版本的 Mihomo / Clash Meta 内核）
 # 使用步骤：
 # 1. 机场A 使用在线订阅；机场C 已内置 87 个条目（85 个实际节点），无需临时订阅链接。
@@ -1397,15 +1397,6 @@ rule-providers:
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml
 
-  youtube:
-    type: http
-    proxy: DIRECT
-    path: ./ruleset/youtube.yaml
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml
-
   apple:
     type: http
     proxy: DIRECT
@@ -1414,15 +1405,6 @@ rule-providers:
     format: yaml
     interval: 86400
     url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml
-
-  google:
-    type: http
-    proxy: DIRECT
-    path: ./ruleset/google.yaml
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml
 
   direct:
     type: http
@@ -1523,32 +1505,14 @@ rule-providers:
     url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
     path: ./ruleset/GitHub.yaml
 
-  Bing:
+  OneDrive:
     type: http
     proxy: DIRECT
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Bing/Bing.yaml
-    path: ./ruleset/Bing.yaml
-
-  MicrosoftAPPs:
-    type: http
-    proxy: DIRECT
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/main/MicrosoftAPPs/MicrosoftAPPs.yaml
-    path: ./ruleset/MicrosoftAPPs.yaml
-
-  Microsoft:
-    type: http
-    proxy: DIRECT
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml
-    path: ./ruleset/Microsoft.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OneDrive/OneDrive.yaml
+    path: ./ruleset/OneDrive.yaml
 proxy-groups:
 
   - name: "漏网之鱼"
@@ -1563,7 +1527,6 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - "家宽IP"
-      - "全部节点"
       - DIRECT
 
   - name: "AI"
@@ -1577,21 +1540,7 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - "家宽IP"
-      - "全部节点"
-      - DIRECT
-
-  - name: "Youtube"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
-    proxies:
-      - "香港节点"
-      - "美国节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
+      - 自动选择
       - DIRECT
 
   - name: "TikTok"
@@ -1605,12 +1554,12 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - "家宽IP"
-      - "全部节点"
+      - 自动选择
       - DIRECT
 
-  - name: "Steam"
+  - name: "社交媒体"
     type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
+    icon: https://img.icons8.com/color/96/conference-call.png
     proxies:
       - "香港节点"
       - "日本节点"
@@ -1619,92 +1568,8 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - "家宽IP"
-      - "全部节点"
-      - DIRECT
-
-  - name: "Google"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
-    proxies:
-      - "美国节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "香港节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - DIRECT
-
-  - name: "Pixiv"
-    type: select
-    icon: https://img.icons8.com/color/48/pixiv.png
-    proxies:
-      - "香港节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "美国节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - DIRECT
-
-  - name: "X"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
-    proxies:
-      - "香港节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "美国节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
+      - 自动选择
       - "DIRECT"
-
-  - name: "Telegram"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
-    proxies:
-      - "香港节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "美国节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - "DIRECT"
-
-  - name: "GitHub"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/GitHub.png
-    proxies:
-      - "香港节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "美国节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - "DIRECT"
-
-  - name: "Microsoft"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
-    proxies:
-      - "香港节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "美国节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - DIRECT
 
   # 按订阅名称中的“家宽 / 住宅”标签筛选，不能单凭名称证明出口的真实 IP 类型。
   # 排除“家宽机场”宣传语；订阅更新后会自动重新归类。
@@ -1723,14 +1588,6 @@ proxy-groups:
     timeout: 5000
     max-failed-times: 3
     lazy: true
-
-  - name: "全部节点"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
-    include-all-providers: true
-    empty-fallback: REJECT
-    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
-    exclude-type: Direct
 
   - name: 自动选择
     type: url-test
@@ -1838,10 +1695,19 @@ proxy-groups:
   # DNS代理不提供 DIRECT 选项，避免服务分组选择直连时也把海外 DNS 带到直连。
   - name: DNS代理
     type: select
+    hidden: true
     proxies:
       - 自动选择
       - "家宽IP"
-      - 全部节点
+
+  # 收纳被普通代理组排除的流量、到期等订阅提示节点，并隐藏展示。
+  # 此组不用于分流，不参与自动选择。
+  - name: "订阅信息"
+    type: select
+    hidden: true
+    include-all-providers: true
+    empty-fallback: REJECT
+    filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)'
 
 # 规则按从上到下的顺序匹配；具体域名规则放在通用规则之前
 rules:
@@ -1874,10 +1740,6 @@ rules:
   - "DOMAIN,steamcdn-a.akamaihd.net,DIRECT"
   - "DOMAIN-SUFFIX,steamserver.net,DIRECT"
   - "DOMAIN-SUFFIX,steamcontent.com,DIRECT"
-  # Pixiv 及图片、资讯站域名使用可手动选择的 Pixiv 代理组
-  - "DOMAIN-SUFFIX,pixiv.net,Pixiv"
-  - "DOMAIN-SUFFIX,pximg.net,Pixiv"
-  - "DOMAIN-SUFFIX,pixivision.net,Pixiv"
 
   # 国内 AI 服务直连
   - "RULE-SET,ai-cn,DIRECT"
@@ -1885,35 +1747,24 @@ rules:
   # 其余海外 AI 服务走通用 AI 代理组
   - "RULE-SET,ai-global,AI"
 
-  # GitHub 及 npm 使用仓库规则集；Copilot 优先使用前面的 AI 规则
-  - "RULE-SET,GitHub,GitHub"
+  # GitHub 及 npm 统一使用漏网之鱼；Copilot 优先使用前面的 AI 规则
+  # 保留此规则：其中的 github 关键词也会覆盖后续直连列表中的部分域名。
+  - "RULE-SET,GitHub,漏网之鱼"
 
-  # Bing 单独走微软代理组，优先于微软应用直连规则
-  - "RULE-SET,Bing,Microsoft"
-
-  # 其他中国区微软服务直连；Windows 更新、商店、Office 等规则也直连
-  - GEOSITE,microsoft@cn,DIRECT
-  - RULE-SET,MicrosoftAPPs,DIRECT
-
-  # 其余微软服务走微软代理组
-  - "RULE-SET,Microsoft,Microsoft"
+  # OneDrive 明确走漏网之鱼，优先于后面的通用直连规则。
+  - "RULE-SET,OneDrive,漏网之鱼"
 
   # 其他单独指定的代理服务
+  # assrt.net 属于国内直连列表，保留此项以指定走代理。
   - "DOMAIN,api.assrt.net,漏网之鱼"
-  - "RULE-SET,youtube,Youtube"
   - "RULE-SET,TikTok,TikTok"
-  - "DOMAIN-SUFFIX,steampowered.com,Steam"
-  - "DOMAIN-SUFFIX,steamcommunity.com,Steam"
-  - "DOMAIN-SUFFIX,steamstatic.com,Steam"
-  - "DOMAIN-SUFFIX,steamusercontent.com,Steam"
   - RULE-SET,apple,DIRECT
-  - "RULE-SET,google,Google"
 
   # X / Twitter 使用 blackmatrix7 仓库规则集
-  - "RULE-SET,Twitter,X"
+  - "RULE-SET,Twitter,社交媒体"
 
   # Telegram 域名、IP 和应用使用 blackmatrix7 仓库规则集
-  - "RULE-SET,Telegram,Telegram"
+  - "RULE-SET,Telegram,社交媒体"
 
   # 通用直连规则与中国区兜底规则放在单项分流之后
   - RULE-SET,direct,DIRECT

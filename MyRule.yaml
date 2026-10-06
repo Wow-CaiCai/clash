@@ -1,3 +1,4 @@
+# Last modified: 2026-10-07 00:58:25 (UTC+08:00)
 rule-providers:
 
   ads:
@@ -293,22 +294,9 @@ proxy-groups:
       - "全部节点"
       - DIRECT
 
-  - name: "X"
+  - name: "社交媒体"
     type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
-    proxies:
-      - "香港节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "美国节点"
-      - "台湾节点"
-      - "其他地区"
-      - "全部节点"
-      - "DIRECT"
-
-  - name: "Telegram"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    icon: https://img.icons8.com/color/96/conference-call.png
     proxies:
       - "香港节点"
       - "日本节点"
@@ -521,10 +509,10 @@ rules:
   - "RULE-SET,google,Google"
 
   # X / Twitter 使用 blackmatrix7 仓库规则集
-  - "RULE-SET,Twitter,X"
+  - "RULE-SET,Twitter,社交媒体"
 
   # Telegram 域名、IP 和应用使用 blackmatrix7 仓库规则集
-  - "RULE-SET,Telegram,Telegram"
+  - "RULE-SET,Telegram,社交媒体"
 
   # 通用直连规则与中国区兜底规则放在单项分流之后
   - RULE-SET,direct,DIRECT

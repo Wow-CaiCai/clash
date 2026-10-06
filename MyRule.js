@@ -1,3 +1,4 @@
+// Last modified: 2026-10-07 00:58:25 (UTC+08:00)
 // FlClash Override Script
 // Select this script in FlClash profile override settings.
 // These sections mirror MyRule.yaml.
@@ -317,24 +318,9 @@ const customConfig = {
       ]
     },
     {
-      "name": "X",
+      "name": "社交媒体",
       "type": "select",
-      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png",
-      "proxies": [
-        "香港节点",
-        "日本节点",
-        "新加坡节点",
-        "美国节点",
-        "台湾节点",
-        "其他地区",
-        "全部节点",
-        "DIRECT"
-      ]
-    },
-    {
-      "name": "Telegram",
-      "type": "select",
-      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png",
+      "icon": "https://img.icons8.com/color/96/conference-call.png",
       "proxies": [
         "香港节点",
         "日本节点",
@@ -533,8 +519,8 @@ const customConfig = {
     "DOMAIN-SUFFIX,steamusercontent.com,Steam",
     "RULE-SET,apple,DIRECT",
     "RULE-SET,google,Google",
-    "RULE-SET,Twitter,X",
-    "RULE-SET,Telegram,Telegram",
+    "RULE-SET,Twitter,社交媒体",
+    "RULE-SET,Telegram,社交媒体",
     "RULE-SET,direct,DIRECT",
     "GEOSITE,CN,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
