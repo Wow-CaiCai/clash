@@ -1,3 +1,4 @@
+# Last modified: 2026-10-06 17:47:49 (UTC+08:00)
 # 多机场订阅 + MyRule 分流（适用于近期版本的 Mihomo / Clash Meta 内核）
 # 使用步骤：
 # 1. 机场A 使用在线订阅；机场C 已内置 87 个条目（85 个实际节点），无需临时订阅链接。
@@ -16,7 +17,7 @@
 # DNS 设计：国内 / 直连域名使用国内 DoH；其他域名使用经 DNS代理 组传输的海外 DoH。
 # 引导解析和节点入口解析也使用 DoH；仅局域网名称显式交给系统 DNS。
 # 此设计兼顾国内访问速度与海外查询隐私，不保证任何客户端 / 系统下绝对零泄露。
-# 分流规则与规则来源复制自 MyRule.yaml；后续修改 MyRule.yaml 不会自动同步到本文件。
+# 分流规则与规则来源基于 MyRule.yaml，已移除 ChatGPT / Gemini 独立分流；后续修改 MyRule.yaml 不会自动同步到本文件。
 
 mixed-port: 7890
 allow-lan: false
@@ -1357,7 +1358,6 @@ proxy-providers:
         up: "100 Mbps"
         down: "300 Mbps"
 
-# 原 MyRule 的规则集、服务分流与规则顺序；原文件保持不变。
 rule-providers:
 
   ads:
@@ -1377,24 +1377,6 @@ rule-providers:
     interval: 86400
     url: https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt
     path: ./ruleset/anti-ad-clash.yaml
-
-  chatgpt:
-    type: http
-    proxy: DIRECT
-    path: ./ruleset/chatgpt.yaml
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/openai.yaml
-
-  google-ai:
-    type: http
-    proxy: DIRECT
-    path: ./ruleset/google-ai.yaml
-    behavior: classical
-    format: yaml
-    interval: 86400
-    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/google-ai.yaml
 
   ai-cn:
     type: http
@@ -1587,34 +1569,6 @@ proxy-groups:
   - name: "AI"
     type: select
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png
-    proxies:
-      - "美国节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "香港节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - DIRECT
-
-  - name: "ChatGPT"
-    type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
-    proxies:
-      - "美国节点"
-      - "日本节点"
-      - "新加坡节点"
-      - "香港节点"
-      - "台湾节点"
-      - "其他地区"
-      - "家宽IP"
-      - "全部节点"
-      - DIRECT
-
-  - name: "Gemini"
-    type: select
-    icon: https://cdn.jsdelivr.net/gh/guaishouxiaoqi/icons@master/Color/Gemini.png
     proxies:
       - "美国节点"
       - "日本节点"
@@ -1923,12 +1877,6 @@ rules:
   - "DOMAIN-SUFFIX,pixiv.net,Pixiv"
   - "DOMAIN-SUFFIX,pximg.net,Pixiv"
   - "DOMAIN-SUFFIX,pixivision.net,Pixiv"
-
-  # ChatGPT / OpenAI 独立选择地区
-  - "RULE-SET,chatgpt,ChatGPT"
-
-  # Gemini / Google AI 使用仓库规则集，独立选择地区
-  - "RULE-SET,google-ai,Gemini"
 
   # 国内 AI 服务直连
   - "RULE-SET,ai-cn,DIRECT"
