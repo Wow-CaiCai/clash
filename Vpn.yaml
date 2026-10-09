@@ -1,23 +1,11 @@
-# Last modified: 2026-10-07 01:27:38 (UTC+08:00)
-# 多机场订阅 + MyRule 分流（适用于近期版本的 Mihomo / Clash Meta 内核）
-# 使用步骤：
-# 1. 机场A 使用在线订阅；机场C 已内置 87 个条目（85 个实际节点），无需临时订阅链接。
-#    更换 A 时替换整个 url；更新 C 时替换其 payload 中的节点。
-#    未使用的机场请删除对应 provider；各分组会自动引入所有 provider。
-# 2. 将本文件作为独立本地配置导入，启用客户端 TUN / VPN 模式及必要的服务权限。
-#    本文件含订阅令牌和节点认证信息，请勿公开分享或提交到公开仓库。
-# 3. 导入时不要再叠加会覆盖 DNS、TUN 或分组的全局覆写。
-# 4. macOS / Windows 的 TUN 不一定能接管发往局域网路由器的 DNS。
-#    如客户端未自动设置系统 DNS，请将当前网卡 DNS 设为 127.0.0.1（本 DNS 服务监听 53）。
-#    若 53 端口被其他 DNS 服务占用，需要先解决冲突；不要仅改监听端口后继续使用上述网卡设置。
-#    如果需要解析 NAS 等局域网名称，网卡 DNS 指向本机后，须将下方局域网策略中的 system
-#    换为实际路由器的 DNS 地址，避免系统 DNS 再次指向本机而形成回环。
-# 5. 浏览器内置安全 DNS、系统私人 DNS 和其他 VPN 可能绕过普通 53 端口接管。
-#    建议关闭浏览器内置安全 DNS，统一交给本配置解析；本文件不修改系统网络设置。
-# DNS 设计：国内 / 直连域名使用国内 DoH；其他域名使用经 DNS代理 组传输的海外 DoH。
-# 引导解析和节点入口解析也使用 DoH；仅局域网名称显式交给系统 DNS。
-# 此设计兼顾国内访问速度与海外查询隐私，不保证任何客户端 / 系统下绝对零泄露。
-# 分流规则与规则来源基于 MyRule.yaml，已移除 ChatGPT / Gemini 独立分流；后续修改 MyRule.yaml 不会自动同步到本文件。
+# Last modified: 2026-10-09 20:49:14 (UTC+08:00)
+# Mihomo / Clash Meta：多机场订阅 + MyRule 分流。
+# 良心云使用在线订阅；三元店内置 23 个家宽 / 住宅节点。
+# 独立导入本配置，启用客户端 TUN / VPN 权限，避免全局覆写覆盖配置。
+# DNS 使用双栈 fake-ip 和 DoH；百度、公司内网使用指定 DNS。
+# 系统 DNS 未被客户端接管时可设为 127.0.0.1；确保 53 端口未被占用。
+# 分流基于 MyRule.yaml，后续修改不会自动同步。
+# 含订阅令牌和节点认证信息，请勿公开分享。
 
 mixed-port: 7890
 allow-lan: false
@@ -28,13 +16,13 @@ external-controller: 127.0.0.1:9090
 unified-delay: true
 tcp-concurrent: true
 find-process-mode: strict
-# 接管 IPv6 流量；DNS 下方不返回 AAAA，常规域名访问优先使用 IPv4。
+# 开启 IPv6 连接；DNS 同时支持 IPv6 解析。
 ipv6: true
 profile:
   store-selected: true
   store-fake-ip: true
 
-# MyRule 使用 GEOSITE / GEOIP；使用官方维护的数据文件，避免依赖系统 DNS 做引导。
+# 自动更新 GEOSITE / GEOIP 数据。
 geodata-mode: true
 geodata-loader: memconservative
 geo-auto-update: true
@@ -43,15 +31,16 @@ geox-url:
   geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
   geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
 
-# 生效需要客户端提供 TUN / VPN 权限。创建本文件不会开启系统 TUN。
+# TUN 接管 IPv4 / IPv6 流量及 DNS 查询。
 tun:
   enable: true
   stack: mixed
   auto-route: true
   auto-detect-interface: true
   strict-route: true
+  # TUN 接口与 IPv6 fake-ip 地址池使用不同网段。
   inet6-address:
-    - fdfe:dcba:9876::1/126
+    - fdfe:dcba:9877::1/126
   route-address:
     - 0.0.0.0/0
     - "::/0"
@@ -61,60 +50,55 @@ tun:
 
 dns:
   enable: true
-  listen: 127.0.0.1:53
-  ipv6: false
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  fake-ip-filter-mode: blacklist
-  fake-ip-filter:
-    - localhost
-    - "+.localhost"
-    - "+.lan"
-    - "+.local"
-    - "+.home.arpa"
-  use-hosts: true
-  use-system-hosts: true
-  cache-algorithm: arc
-  respect-rules: true
+  listen: '0.0.0.0:53'
+  enhanced-mode: 'fake-ip'
+  fake-ip-range: '198.18.0.1/16'
+  fake-ip-range6: 'fdfe:dcba:9876::1/64'
+  fake-ip-filter-mode: 'blacklist'
   prefer-h3: false
-  # IP 地址形式的 DoH，建立加密 DNS 连接时无需先通过明文 DNS 查询服务器域名。
+  respect-rules: true
+  use-hosts: true
+  use-system-hosts: false
+  ipv6: true
+  fake-ip-filter:
+    - '*.lan'
+    - '*.arpa'
+    - '*.local'
+    - 'geosite:private'
+    - '+.internal.corp.com'
+    - '+.market.xiaomi.com'
+    - 'geosite:category-ntp'
+    - 'geosite:geolocation-cn'
+    - 'localhost.ptlogin2.qq.com'
+    - 'geosite:connectivity-check'
+  # IP 地址 DoH 用于引导解析，不依赖系统 DNS。
   default-nameserver:
-    - "https://223.5.5.5/dns-query#DIRECT"
-    - "https://223.6.6.6/dns-query#DIRECT"
-  # 订阅入口解析独立直连，避免先连代理才能解析代理入口的循环依赖。
+    - 'https://223.5.5.5/dns-query#DIRECT'
+    - 'https://223.6.6.6/dns-query#DIRECT'
+  # 节点入口独立直连解析，避免 DNS 与代理互相依赖。
   proxy-server-nameserver:
-    - "https://223.5.5.5/dns-query#DIRECT"
-    - "https://223.6.6.6/dns-query#DIRECT"
-  # MyRule 判定为 DIRECT 的连接使用国内加密 DNS，有利于 CDN 就近分配。
-  direct-nameserver:
-    - "https://223.5.5.5/dns-query#DIRECT"
-    - "https://223.6.6.6/dns-query#DIRECT"
-  direct-nameserver-follow-policy: false
-  # 默认查询强制经过独立代理组；没有可用节点时不回退到直连 DNS。
+    - 'https://223.5.5.5/dns-query#DIRECT'
+    - 'https://223.6.6.6/dns-query#DIRECT'
   nameserver:
-    - "https://1.1.1.1/dns-query#DNS代理"
-    - "https://8.8.8.8/dns-query#DNS代理"
+    - 'https://doh.pub/dns-query'
+    - 'https://dns.alidns.com/dns-query'
+    - 'https://doh.360.cn/dns-query'
+    - 'https://dns.google/dns-query'
+    - 'https://cloudflare-dns.com/dns-query'
   nameserver-policy:
-    "geosite:cn":
-      - "https://223.5.5.5/dns-query#DIRECT"
-      - "https://223.6.6.6/dns-query#DIRECT"
-    # 局域网名称是有意保留的例外，防止 NAS / 打印机名称被发送到公网 DNS。
-    # system 必须指向实际局域网 DNS；若系统 DNS 已改为本机，将其替换为路由器 DNS IP。
-    "+.localhost": system
-    "+.lan": system
-    "+.local": system
-    "+.home.arpa": system
+    '+.baidu.com':
+      - 'https://dns.alidns.com/dns-query'
+    '+.internal.corp.com':
+      - '10.0.0.1'
 
-# 扩展机场时复制一个条目，使用唯一名称、缓存路径和前缀即可。
-# provider 保留原始节点条目；节点过滤统一在后面的代理组中设置。
-# 机场A 为良心云；机场C 为三元店的静态节点集合。
+# 机场A：良心云；机场C：三元店家宽。新增机场需使用唯一名称、路径和前缀。
 proxy-providers:
   机场A:
     type: http
     url: "https://liangxin.xyz/api/v1/liangxin?OwO=568a8fa6566a6a365d2fc182cdc8e4bf"
     path: ./proxy-providers/airport-a.yaml
     interval: 3600
-    # 订阅下载走直连，首次加载不依赖尚未导入的代理。
+    # 直连下载订阅。
     proxy: DIRECT
     override:
       additional-prefix: "[良心云] "
@@ -137,479 +121,8 @@ proxy-providers:
       timeout: 5000
       lazy: true
       expected-status: 204
-    # 保留三元店原始 87 个条目（85 个实际节点）；流量和到期信息由代理组过滤。
-    # 服务商变更节点参数时需重新提取。
+    # 23 个家宽 / 住宅节点，参数变更时手动更新。
     payload:
-      -
-        name: "📊 剩余流量: 150.04 GB / 150.04 GB"
-        type: vless
-        server: "127.0.0.1"
-        port: 80
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        udp: false
-
-      -
-        name: "🕒 到期时间: 2026-11-05 01:01"
-        type: vless
-        server: "127.0.0.1"
-        port: 80
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        udp: false
-
-      -
-        name: "🇭🇰香港高速无限1-永久官网https://syjc.xyz"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 12345
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港高速无限2-流媒体解锁"
-        type: vless
-        server: "hkzz.syjc.xyz"
-        port: 12346
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "S36tKKrSodR79b7Ewbz6Qx_U1CtOetIsks9gCHQbqRQ"
-          short-id: "2d0100eb"
-
-      -
-        name: "🇭🇰VIP香港高速无限3-流媒体解锁"
-        type: vless
-        server: "hkzz.syjc.xyz"
-        port: 12347
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "m37NvydwP51-iwsCBqQm_ZKl1FlwCBVvroARk9KlcUk"
-          short-id: "e6021f9f"
-
-      -
-        name: "🇸🇬新加坡高速无限4-全部新加坡流媒体解锁"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40011
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇯🇵日本高速无限5-全部日本流媒体解锁"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40012
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇨🇳台湾高速无限6-全部台湾流媒体解锁"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40013
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰VIP香港高速无限8-流媒体解锁"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40015
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港高速无限10-流媒体解锁"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40017
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸美国高速5-最具性价比的家宽机场"
-        type: vless
-        server: "usgs5.sanyuan.cyou"
-        port: 35675
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "Aai-Z-Z-7y1CY67slr4sPsFPAP08mB50vinST45iHRg"
-          short-id: "09e32b8c"
-
-      -
-        name: "🇺🇸VIP美国高速6-流媒体解锁"
-        type: vless
-        server: "usgs6.sanyuan.cyou"
-        port: 25443
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "4O0ufcjo_S5aq_wFk93SkONbGMEtChjhFh1XqjXSDyQ"
-          short-id: "9b52cb18"
-
-      -
-        name: "🇺🇸VIP美国高速7-流媒体解锁"
-        type: hysteria2
-        server: "usgs7.sanyuan.cyou"
-        port: 60443
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇯🇵日本4-流媒体解锁"
-        type: vless
-        server: "jp04.sanyuan.cyou"
-        port: 25634
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "tTURb33uXeFW2UUyhroInoQu5xNCRHNTWxjS7P3l5C8"
-          short-id: "b3ba19cc"
-
-      -
-        name: "🇭🇰香港4K20W纯IPV6防失联节点"
-        type: vless
-        server: "hkv6.sanyuan.cyou"
-        port: 42351
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "pVQLwqzGJEutGwPtyNgNg1TLLWagFwTBbAW9VXr_zQo"
-          short-id: "6fb44c2f"
-
-      -
-        name: "🇹🇭VIP泰国3-泰国ip无法访问官网"
-        type: vless
-        server: "th3.sanyuan.cyou"
-        port: 21443
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "8Pm8CpXmy9Jhf99GZ29FJS1DSFajZtd0hGGdh1xg_CA"
-          short-id: "378a392a"
-
-      -
-        name: "🇹🇭VIP泰国4-泰国ip无法访问官网"
-        type: vless
-        server: "th4.sanyuan.cyou"
-        port: 60449
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "YWi_4S6jEzV63XqMMjiQ4BjqYFEoj6wE1xRVQBKKc1U"
-          short-id: "ce3d6bb1"
-
-      -
-        name: "🇹🇭VIP泰国5-泰国ip无法访问官网"
-        type: vless
-        server: "th5.sanyuan.cyou"
-        port: 60500
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "yCeqO-avMh-IO5J0QlsFc5OsRXfrmH52E3fTCzH6504"
-          short-id: "25eabe70"
-
-      -
-        name: "🇹🇭泰国6-泰国ip无法访问官网"
-        type: vless
-        server: "th6.sanyuan.cyou"
-        port: 60501
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "PX60nSiO6vK0-F1iB34T2cKsc2EXlS-kNEiHf2MYAxs"
-          short-id: "bfc30573"
-
-      -
-        name: "🇱🇻拉托维亚"
-        type: hysteria2
-        server: "lt.sanyuan.cyou"
-        port: 51243
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇳🇱荷兰3-流媒体解锁4K20W"
-        type: hysteria2
-        server: "hl3.sanyuan.cyou"
-        port: 43443
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇳🇱荷兰4-流媒体解锁4K20W"
-        type: hysteria2
-        server: "hl4.sanyuan.cyou"
-        port: 57443
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰VIP香港1-流媒体解锁"
-        type: vless
-        server: "hk01.sanyuan.cyou"
-        port: 59812
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "PD5QeOdcaFLJyIc1tbfyY0hH7Y4DcylhnlDJcc2hO2I"
-          short-id: "d559e952"
-
-      -
-        name: "🇭🇰香港11-5Gbps"
-        type: vless
-        server: "hk11.sanyuan.cyou"
-        port: 23145
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "HndQeHeEbO1Q8xOxWthL3KpjYvBfqFUNLD1LquqoNy4"
-          short-id: "8044b0fc"
-
-      -
-        name: "🇭🇰香港13-5Gbps"
-        type: hysteria2
-        server: "hk13.sanyuan.cyou"
-        port: 25653
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港12-移动优化"
-        type: vless
-        server: "hk12.sanyuan.cyou"
-        port: 23570
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "lcqPwlOKKMo8WuyGuVS_nqtiHF_YwenwJi253wsvzyo"
-          short-id: "6a04d456"
-
-      -
-        name: "🇯🇵日本3-流媒体解锁"
-        type: vless
-        server: "jp03.sanyuan.cyou"
-        port: 23489
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "bgOAObJh_oTyBRGc4jfEMLpDNdqaJU1jwri_2qor0wA"
-          short-id: "c54bf403"
-
-      -
-        name: "🇯🇵日本9"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40004
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇯🇵VIP日本11-三网优化"
-        type: vless
-        server: "jp11.sanyuan.cyou"
-        port: 41213
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "dyqV1YjCgPwVfieRFMEsx8F0ivH61H5uFF18zTKZsnU"
-          short-id: "c852da42"
-
-      -
-        name: "🇯🇵VIP日本13-三网优化流媒体解锁"
-        type: hysteria2
-        server: "jp13.sanyuan.cyou"
-        port: 40143
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇯🇵日本14-三网优化"
-        type: hysteria2
-        server: "jp14.sanyuan.cyou"
-        port: 42431
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
       -
         name: "🇭🇰香港无限7-家宽动态住宅IP"
         type: hysteria2
@@ -909,454 +422,6 @@ proxy-providers:
         up: "100 Mbps"
         down: "300 Mbps"
 
-      -
-        name: "🇯🇵日本2-流媒体解锁"
-        type: hysteria2
-        server: "jp2.sanyuan.cyou"
-        port: 57893
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇯🇵VIP日本06-流媒体解锁"
-        type: hysteria2
-        server: "jp06.sanyuan.cyou"
-        port: 52300
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇯🇵VIP日本08"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 49659
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇲🇴澳门"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40005
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸美国高速2"
-        type: hysteria2
-        server: "usgs2.sanyuan.cyou"
-        port: 49991
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸VIP美国高速3"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40007
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸美国高速4"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40022
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸VIP美国1-流媒体解锁"
-        type: hysteria2
-        server: "us01.sanyuan.cyou"
-        port: 44321
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸VIP美国2-流媒体解锁"
-        type: hysteria2
-        server: "us02.sanyuan.cyou"
-        port: 23443
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸美国4-流媒体解锁"
-        type: hysteria2
-        server: "us4.sanyuan.cyou"
-        port: 44323
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸美国8-流媒体解锁"
-        type: hysteria2
-        server: "us8.sanyuan.cyou"
-        port: 35677
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇺🇸美国9-流媒体解锁"
-        type: hysteria2
-        server: "us09.sanyuan.cyou"
-        port: 35644
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港3"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 52334
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港9"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 22222
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇰🇷韩国3-流媒体解锁"
-        type: hysteria2
-        server: "kr3.sanyuan.cyou"
-        port: 56551
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇨🇳VIP台湾7-流媒体解锁"
-        type: hysteria2
-        server: "tw7.sanyuan.cyou"
-        port: 31823
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇨🇳台湾8-流媒体解锁"
-        type: hysteria2
-        server: "tw8.sanyuan.cyou"
-        port: 23451
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇸🇬新加坡5"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 42143
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇸🇬VIP新加坡6-该节点无法访问官网"
-        type: vless
-        server: "hkzz.syjc.xyz"
-        port: 49658
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "WVAyuGmN576GZ6EPVbImwbbjCb7QdQMIzjGuo1caWzg"
-          short-id: "32cb0b0b"
-
-      -
-        name: "🇳🇱荷兰"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 58431
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇳🇱VIP荷兰2-流媒体解锁"
-        type: hysteria2
-        server: "hl02.sanyuan.cyou"
-        port: 40008
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇵🇱波兰"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 53211
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇹🇷土耳其2"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 40021
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇩🇪德国1-流媒体解锁"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 42450
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇩🇪VIP德国5-流媒体解锁"
-        type: hysteria2
-        server: "de05.sanyuan.cyou"
-        port: 40009
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇫🇷法国"
-        type: hysteria2
-        server: "hkzz.syjc.xyz"
-        port: 42453
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇬🇧英国2-流媒体解锁"
-        type: hysteria2
-        server: "uk2.sanyuan.cyou"
-        port: 40019
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇮🇳印度2-流媒体解锁"
-        type: hysteria2
-        server: "in2.sanyuan.cyou"
-        port: 45465
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港-低延迟速度很慢1AI解锁日本"
-        type: vless
-        server: "dx.sanyuan.cyou"
-        port: 24459
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "Y0Q1IcInuhDCDy8wQfVamYDW1GqoIXMcyruh2R_NFWg"
-          short-id: "7fcde4c9"
-
-      -
-        name: "🇭🇰香港-低延迟速度很慢2AI解锁台湾"
-        type: vless
-        server: "dx2.sanyuan.cyou"
-        port: 46731
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "addons.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "z_tWNsw2VEB-sYUce9uXTIC0Z1d_mOp5br90SD1rLGc"
-          short-id: "2ce43638"
-
-      -
-        name: "🇭🇰香港-低延迟速度很慢3AI解锁韩国"
-        type: hysteria2
-        server: "dx3.sanyuan.cyou"
-        port: 37546
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
-
-      -
-        name: "🇭🇰香港-低延迟速度很慢4"
-        type: vless
-        server: "dx4.sanyuan.cyou"
-        port: 12346
-        uuid: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        network: tcp
-        packet-encoding: xudp
-        tls: true
-        udp: true
-        skip-cert-verify: false
-        servername: "telemetry.mozilla.org"
-        client-fingerprint: chrome
-        flow: xtls-rprx-vision
-        reality-opts:
-          public-key: "hjDFDgDKdg8Pi-bjInK4UeKAiCR7ywPsEB5c8KpLAwM"
-          short-id: "6defecdd"
-
-      -
-        name: "🇭🇰香港-低延迟速度很慢5"
-        type: hysteria2
-        server: "dx5.sanyuan.cyou"
-        port: 23795
-        password: "c269c62b-f6de-489c-8549-b7b7700a451f"
-        sni: "www.bing.com"
-        skip-cert-verify: true
-        alpn:
-          - h3
-        up: "100 Mbps"
-        down: "300 Mbps"
 
 rule-providers:
 
@@ -1692,13 +757,6 @@ proxy-groups:
     proxies:
       - REJECT
       - DIRECT
-  # DNS代理不提供 DIRECT 选项，避免服务分组选择直连时也把海外 DNS 带到直连。
-  - name: DNS代理
-    type: select
-    hidden: true
-    proxies:
-      - 自动选择
-      - "家宽IP"
 
   # 收纳被普通代理组排除的流量、到期等订阅提示节点，并隐藏展示。
   # 此组不用于分流，不参与自动选择。
