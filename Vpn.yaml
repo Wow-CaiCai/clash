@@ -1,4 +1,4 @@
-# Last modified: 2026-10-09 20:49:14 (UTC+08:00)
+# Last modified: 2026-10-13 01:41:39 (UTC+08:00)
 # Mihomo / Clash Meta：多机场订阅 + MyRule 分流。
 # 良心云使用在线订阅；三元店内置 23 个家宽 / 住宅节点。
 # 独立导入本配置，启用客户端 TUN / VPN 权限，避免全局覆写覆盖配置。
@@ -591,7 +591,6 @@ proxy-groups:
       - "美国节点"
       - "台湾节点"
       - "其他地区"
-      - "家宽IP"
       - DIRECT
 
   - name: "AI"
@@ -604,7 +603,6 @@ proxy-groups:
       - "香港节点"
       - "台湾节点"
       - "其他地区"
-      - "家宽IP"
       - 自动选择
       - DIRECT
 
@@ -618,7 +616,6 @@ proxy-groups:
       - "新加坡节点"
       - "台湾节点"
       - "其他地区"
-      - "家宽IP"
       - 自动选择
       - DIRECT
 
@@ -632,27 +629,8 @@ proxy-groups:
       - "美国节点"
       - "台湾节点"
       - "其他地区"
-      - "家宽IP"
       - 自动选择
       - "DIRECT"
-
-  # 按订阅名称中的“家宽 / 住宅”标签筛选，不能单凭名称证明出口的真实 IP 类型。
-  # 排除“家宽机场”宣传语；订阅更新后会自动重新归类。
-  # 单一自动选择组，直接在家宽候选中按测试延迟和切换容差选路。
-  - name: "家宽IP"
-    type: url-test
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/WiFi.png
-    include-all-providers: true
-    empty-fallback: REJECT
-    filter: '(?i)家宽|家寬|家庭宽带|家庭寬帶|住宅|住家|residential'
-    exclude-filter: '(?i)^(?:\[[^\]]+\]\s*)?[\p{P}\p{S}\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)|家宽机场|家寬機場'
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 100
-    timeout: 5000
-    max-failed-times: 3
-    lazy: true
 
   - name: 自动选择
     type: url-test
@@ -813,8 +791,8 @@ rules:
   - "RULE-SET,OneDrive,漏网之鱼"
 
   # 其他单独指定的代理服务
-  # assrt.net 属于国内直连列表，保留此项以指定走代理。
-  - "DOMAIN,api.assrt.net,漏网之鱼"
+  # assrt.net 及其子域名优先走代理，避免被后续国内直连规则覆盖。
+  - "DOMAIN-SUFFIX,assrt.net,漏网之鱼"
   - "RULE-SET,TikTok,TikTok"
   - RULE-SET,apple,DIRECT
 
