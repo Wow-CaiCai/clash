@@ -1,4 +1,4 @@
-// Last modified: 2026-10-13 17:58:04 (UTC+08:00)
+// Last modified: 2026-10-13 18:29:01 (UTC+08:00)
 // Clash Verge Rev extension script. Select it in the profile's script settings.
 // DNS policies follow domain routing order.
 // Process/IP rules resolve via direct-nameserver after DIRECT is selected.
@@ -78,8 +78,8 @@ const customConfig = {
     ],
     "direct-nameserver-follow-policy": false,
     "nameserver": [
-      "https://1.1.1.1/dns-query#漏网之鱼",
-      "https://8.8.8.8/dns-query#漏网之鱼"
+      "https://1.1.1.1/dns-query#默认代理",
+      "https://8.8.8.8/dns-query#默认代理"
     ],
     "nameserver-policy": {
       "rule-set:ads": [
@@ -159,16 +159,16 @@ const customConfig = {
         "https://8.8.8.8/dns-query#AI"
       ],
       "rule-set:GitHub": [
-        "https://1.1.1.1/dns-query#漏网之鱼",
-        "https://8.8.8.8/dns-query#漏网之鱼"
+        "https://1.1.1.1/dns-query#默认代理",
+        "https://8.8.8.8/dns-query#默认代理"
       ],
       "rule-set:OneDrive": [
-        "https://1.1.1.1/dns-query#漏网之鱼",
-        "https://8.8.8.8/dns-query#漏网之鱼"
+        "https://1.1.1.1/dns-query#默认代理",
+        "https://8.8.8.8/dns-query#默认代理"
       ],
       "+.assrt.net": [
-        "https://1.1.1.1/dns-query#漏网之鱼",
-        "https://8.8.8.8/dns-query#漏网之鱼"
+        "https://1.1.1.1/dns-query#默认代理",
+        "https://8.8.8.8/dns-query#默认代理"
       ],
       "rule-set:TikTok": [
         "https://1.1.1.1/dns-query#TikTok",
@@ -196,166 +196,167 @@ const customConfig = {
       ]
     }
   },
+  // Mainland CDN mirrors; download rule providers directly.
   "rule-providers": {
     "ads": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "path": "./ruleset/ads.yaml",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml"
+      "url": "https://cdn.jsdmirror.com/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml"
     },
     "Ad": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "domain",
       "format": "text",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt",
+      "url": "https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules_domainset.txt",
       "path": "./ruleset/anti-ad-clash.yaml"
     },
     "ai-cn": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "path": "./ruleset/ai-cn.yaml",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/cn.yaml"
+      "url": "https://cdn.jsdmirror.com/gh/VPSDance/ai-proxy-rules@main/rules/clash/cn.yaml"
     },
     "ai-global": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "path": "./ruleset/ai-global.yaml",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml"
+      "url": "https://cdn.jsdmirror.com/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml"
     },
     "apple": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "path": "./ruleset/apple.yaml",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml"
+      "url": "https://cdn.jsdmirror.com/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml"
     },
     "direct": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "path": "./ruleset/direct.yaml",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/direct.txt"
     },
     "applications": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "path": "./ruleset/applications.yaml",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/applications.txt"
     },
     "icloud": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt",
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/icloud.txt",
       "path": "./ruleset/icloud.yaml"
     },
     "apple-direct": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt",
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/apple.txt",
       "path": "./ruleset/apple-direct.yaml"
     },
     "private": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt",
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/private.txt",
       "path": "./ruleset/private.yaml"
     },
     "cncidr": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "ipcidr",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt",
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/cncidr.txt",
       "path": "./ruleset/cncidr.yaml"
     },
     "lancidr": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "ipcidr",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/lancidr.txt",
       "path": "./ruleset/lancidr.yaml"
     },
     "TikTok": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml",
+      "url": "https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.yaml",
       "path": "./ruleset/TikTok.yaml"
     },
     "Twitter": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml",
+      "url": "https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.yaml",
       "path": "./ruleset/Twitter.yaml"
     },
     "Telegram": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml",
+      "url": "https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.yaml",
       "path": "./ruleset/Telegram.yaml"
     },
     "GitHub": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml",
+      "url": "https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.yaml",
       "path": "./ruleset/GitHub.yaml"
     },
     "OneDrive": {
       "type": "http",
-      "proxy": "漏网之鱼",
+      "proxy": "DIRECT",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OneDrive/OneDrive.yaml",
+      "url": "https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OneDrive/OneDrive.yaml",
       "path": "./ruleset/OneDrive.yaml"
     }
   },
   "proxy-groups": [
     {
-      "name": "漏网之鱼",
+      "name": "默认代理",
       "type": "select",
-      "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png",
+      "icon": "https://cdn.jsdmirror.com/gh/Koolson/Qure@master/IconSet/Color/Proxy.png",
       "proxies": [
         "自动选择",
         "香港节点",
@@ -556,9 +557,9 @@ const customConfig = {
     "DOMAIN-SUFFIX,steamcontent.com,DIRECT",
     "RULE-SET,ai-cn,DIRECT",
     "RULE-SET,ai-global,AI",
-    "RULE-SET,GitHub,漏网之鱼",
-    "RULE-SET,OneDrive,漏网之鱼",
-    "DOMAIN-SUFFIX,assrt.net,漏网之鱼",
+    "RULE-SET,GitHub,默认代理",
+    "RULE-SET,OneDrive,默认代理",
+    "DOMAIN-SUFFIX,assrt.net,默认代理",
     "RULE-SET,TikTok,TikTok",
     "RULE-SET,apple,DIRECT",
     "RULE-SET,Twitter,社交媒体",
@@ -567,7 +568,7 @@ const customConfig = {
     "GEOSITE,CN,DIRECT",
     "RULE-SET,cncidr,DIRECT,no-resolve",
     "GEOIP,CN,DIRECT,no-resolve",
-    "MATCH,漏网之鱼"
+    "MATCH,默认代理"
   ]
 };
 
@@ -585,7 +586,7 @@ function main(config) {
     group.type === "select" &&
     Array.isArray(group.proxies) &&
     group.proxies.length > 0 &&
-    !group.proxies.includes("漏网之鱼")
+    !group.proxies.includes("默认代理")
   );
   if (originalPrimary) {
     customGroups[0].proxies.unshift(originalPrimary.name);

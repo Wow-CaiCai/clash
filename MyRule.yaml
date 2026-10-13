@@ -1,4 +1,4 @@
-# Last modified: 2026-10-13 17:58:04 (UTC+08:00)
+# Last modified: 2026-10-13 18:29:01 (UTC+08:00)
 # 端口、运行模式、IPv6、TUN 与控制器由 Clash Verge Rev 应用设置管理。
 tcp-concurrent: true
 find-process-mode: strict
@@ -15,7 +15,7 @@ geox-url:
   geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
   geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
 
-# 白名单分流：域名 DNS 策略与下方路由规则保持同序，未匹配一律通过漏网之鱼查询。
+# 白名单分流：域名 DNS 策略与下方路由规则保持同序，未匹配一律通过默认代理查询。
 dns:
   enable: true
   listen: '[::]:53'
@@ -70,8 +70,8 @@ dns:
   direct-nameserver: *domestic-doh
   direct-nameserver-follow-policy: false
   nameserver:
-    - https://1.1.1.1/dns-query#漏网之鱼
-    - https://8.8.8.8/dns-query#漏网之鱼
+    - https://1.1.1.1/dns-query#默认代理
+    - https://8.8.8.8/dns-query#默认代理
   # DNS 地址后附加代理组名，显式使用该组当前节点；respect-rules 仅匹配 DNS 服务器地址。
   nameserver-policy:
     rule-set:ads:
@@ -100,14 +100,14 @@ dns:
       - https://1.1.1.1/dns-query#AI
       - https://8.8.8.8/dns-query#AI
     rule-set:GitHub:
-      - https://1.1.1.1/dns-query#漏网之鱼
-      - https://8.8.8.8/dns-query#漏网之鱼
+      - https://1.1.1.1/dns-query#默认代理
+      - https://8.8.8.8/dns-query#默认代理
     rule-set:OneDrive:
-      - https://1.1.1.1/dns-query#漏网之鱼
-      - https://8.8.8.8/dns-query#漏网之鱼
+      - https://1.1.1.1/dns-query#默认代理
+      - https://8.8.8.8/dns-query#默认代理
     +.assrt.net:
-      - https://1.1.1.1/dns-query#漏网之鱼
-      - https://8.8.8.8/dns-query#漏网之鱼
+      - https://1.1.1.1/dns-query#默认代理
+      - https://8.8.8.8/dns-query#默认代理
     rule-set:TikTok:
       - https://1.1.1.1/dns-query#TikTok
       - https://8.8.8.8/dns-query#TikTok
@@ -122,166 +122,166 @@ dns:
     geosite:CN: *domestic-doh
 
 rule-providers:
+  # 使用大陆 CDN 镜像，规则集下载直连，不依赖代理节点。
 
   ads:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     path: ./ruleset/ads.yaml
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
+    url: https://cdn.jsdmirror.com/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
 
   Ad:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: domain
     format: text
     interval: 86400
-    url: https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt
+    url: https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules_domainset.txt
     path: ./ruleset/anti-ad-clash.yaml
 
   ai-cn:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     path: ./ruleset/ai-cn.yaml
     behavior: classical
     format: yaml
     interval: 86400
-    # 原 jsDelivr 地址检查时返回 404，改为同一仓库的原始地址，规则内容和顺序不变。
-    url: https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/cn.yaml
+    url: https://cdn.jsdmirror.com/gh/VPSDance/ai-proxy-rules@main/rules/clash/cn.yaml
 
   ai-global:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     path: ./ruleset/ai-global.yaml
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml
+    url: https://cdn.jsdmirror.com/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml
 
   apple:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     path: ./ruleset/apple.yaml
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml
+    url: https://cdn.jsdmirror.com/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml
 
   direct:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     path: ./ruleset/direct.yaml
     behavior: domain
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/direct.txt
 
   applications:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     path: ./ruleset/applications.yaml
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/applications.txt
 
   icloud:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: domain
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/icloud.txt
     path: ./ruleset/icloud.yaml
 
   apple-direct:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: domain
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/apple.txt
     path: ./ruleset/apple-direct.yaml
 
   private:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: domain
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/private.txt
     path: ./ruleset/private.yaml
 
   cncidr:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: ipcidr
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/cncidr.txt
     path: ./ruleset/cncidr.yaml
 
   lancidr:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: ipcidr
     format: yaml
     interval: 86400
-    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
+    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/lancidr.txt
     path: ./ruleset/lancidr.yaml
 
   TikTok:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml
+    url: https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.yaml
     path: ./ruleset/TikTok.yaml
 
   Twitter:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml
+    url: https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.yaml
     path: ./ruleset/Twitter.yaml
 
   Telegram:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
+    url: https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.yaml
     path: ./ruleset/Telegram.yaml
 
   GitHub:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
+    url: https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.yaml
     path: ./ruleset/GitHub.yaml
 
   OneDrive:
     type: http
-    proxy: 漏网之鱼
+    proxy: DIRECT
     behavior: classical
     format: yaml
     interval: 86400
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OneDrive/OneDrive.yaml
+    url: https://cdn.jsdmirror.com/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OneDrive/OneDrive.yaml
     path: ./ruleset/OneDrive.yaml
 # 静态覆写会替换订阅原有代理组；需要保留原组和已选节点时使用 MyRule.js。
 proxy-groups:
 
-  - name: "漏网之鱼"
+  - name: "默认代理"
     type: select
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
+    icon: https://cdn.jsdmirror.com/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
     proxies:
       - 自动选择
       - "香港节点"
@@ -484,16 +484,16 @@ rules:
   # 其余海外 AI 服务走通用 AI 代理组
   - "RULE-SET,ai-global,AI"
 
-  # GitHub 及 npm 统一使用漏网之鱼；Copilot 优先使用前面的 AI 规则
+  # GitHub 及 npm 统一使用默认代理；Copilot 优先使用前面的 AI 规则
   # 保留此规则：其中的 github 关键词也会覆盖后续直连列表中的部分域名。
-  - "RULE-SET,GitHub,漏网之鱼"
+  - "RULE-SET,GitHub,默认代理"
 
-  # OneDrive 明确走漏网之鱼，优先于后面的通用直连规则。
-  - "RULE-SET,OneDrive,漏网之鱼"
+  # OneDrive 明确走默认代理，优先于后面的通用直连规则。
+  - "RULE-SET,OneDrive,默认代理"
 
   # 其他单独指定的代理服务
   # assrt.net 及其子域名优先走代理，避免被后续国内直连规则覆盖。
-  - "DOMAIN-SUFFIX,assrt.net,漏网之鱼"
+  - "DOMAIN-SUFFIX,assrt.net,默认代理"
   - "RULE-SET,TikTok,TikTok"
   - RULE-SET,apple,DIRECT
 
@@ -509,5 +509,5 @@ rules:
   - RULE-SET,cncidr,DIRECT,no-resolve
   - GEOIP,CN,DIRECT,no-resolve
 
-  # 未匹配规则由漏网之鱼代理组自选
-  - "MATCH,漏网之鱼"
+  # 未匹配规则由默认代理代理组自选
+  - "MATCH,默认代理"
