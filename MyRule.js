@@ -1,4 +1,4 @@
-// Last modified: 2026-10-13 18:44:02 (UTC+08:00)
+// Last modified: 2026-10-13 19:08:53 (UTC+08:00)
 // Clash Verge Rev extension script. Select it in the profile's script settings.
 // DNS policies follow domain routing order.
 // Process/IP rules resolve via direct-nameserver after DIRECT is selected.
@@ -211,11 +211,10 @@ const customConfig = {
       "type": "http",
       "proxy": "DIRECT",
       "behavior": "domain",
-      // Same ad rules in binary form to reduce mobile loading memory.
-      "format": "mrs",
+      "format": "text",
       "interval": 86400,
-      "url": "https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules-mihomo.mrs",
-      "path": "./ruleset/Ad.mrs"
+      "url": "https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules_domainset.txt",
+      "path": "./ruleset/anti-ad-clash.yaml"
     },
     "ai-cn": {
       "type": "http",
@@ -247,12 +246,11 @@ const customConfig = {
     "direct": {
       "type": "http",
       "proxy": "DIRECT",
-      "path": "./ruleset/direct.mrs",
+      "path": "./ruleset/direct.yaml",
       "behavior": "domain",
-      // MRS conversion of Loyalsoldier rules; avoid parsing the large YAML list.
-      "format": "mrs",
+      "format": "yaml",
       "interval": 86400,
-      "url": "https://cdn.jsdmirror.com/gh/wwqgtxx/clash-rules@release/direct.mrs"
+      "url": "https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/direct.txt"
     },
     "applications": {
       "type": "http",
