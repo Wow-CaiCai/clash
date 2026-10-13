@@ -1,7 +1,9 @@
-// Last modified: 2026-10-13 01:41:39 (UTC+08:00)
+// Last modified: 2026-10-13 11:36:22 (UTC+08:00)
 // FlClash Override Script
 // Select this script in FlClash profile override settings.
-// These sections mirror MyRule.yaml.
+// These sections mirror MyRule.yaml. DNS policies follow domain routing order.
+// Process/IP rules resolve via direct-nameserver after DIRECT is selected.
+// Explicit #group DNS routes follow that group; no plaintext/system DNS fallback.
 
 const customConfig = {
   "mixed-port": 7890,
@@ -13,7 +15,7 @@ const customConfig = {
   "unified-delay": true,
   "tcp-concurrent": true,
   "find-process-mode": "strict",
-  "ipv6": false,
+  "ipv6": true,
   "profile": {
     "store-selected": true,
     "store-fake-ip": true
@@ -32,44 +34,194 @@ const customConfig = {
     "auto-route": true,
     "auto-detect-interface": true,
     "strict-route": true,
-    "route-address": ["0.0.0.0/0"],
-    "dns-hijack": ["any:53", "tcp://any:53"]
+    "route-address": [
+      "0.0.0.0/0",
+      "::/0"
+    ],
+    "dns-hijack": [
+      "any:53",
+      "tcp://any:53"
+    ]
   },
   "dns": {
     "enable": true,
-    "listen": "0.0.0.0:53",
+    "listen": "[::]:53",
+    "ipv6": true,
     "enhanced-mode": "fake-ip",
     "fake-ip-range": "198.18.0.1/16",
     "fake-ip-range6": "fdfe:dcba:9876::1/64",
-    "fake-ip-filter-mode": "blacklist",
+    "fake-ip-filter-mode": "rule",
+    "fake-ip-filter": [
+      "RULE-SET,ads,fake-ip",
+      "RULE-SET,Ad,fake-ip",
+      "DOMAIN-SUFFIX,lan,real-ip",
+      "DOMAIN-SUFFIX,local,real-ip",
+      "DOMAIN-SUFFIX,arpa,real-ip",
+      "DOMAIN,localhost,real-ip",
+      "DOMAIN-SUFFIX,blip.net,real-ip",
+      "RULE-SET,applications,real-ip",
+      "DOMAIN,clash.razord.top,real-ip",
+      "DOMAIN,yacd.haishan.me,real-ip",
+      "RULE-SET,private,real-ip",
+      "RULE-SET,icloud,real-ip",
+      "RULE-SET,apple-direct,real-ip",
+      "GEOSITE,private,real-ip",
+      "DOMAIN,steamcdn-a.akamaihd.net,real-ip",
+      "DOMAIN-SUFFIX,steamserver.net,real-ip",
+      "DOMAIN-SUFFIX,steamcontent.com,real-ip",
+      "RULE-SET,ai-cn,real-ip",
+      "RULE-SET,ai-global,fake-ip",
+      "RULE-SET,GitHub,fake-ip",
+      "RULE-SET,OneDrive,fake-ip",
+      "DOMAIN-SUFFIX,assrt.net,fake-ip",
+      "RULE-SET,TikTok,fake-ip",
+      "RULE-SET,apple,real-ip",
+      "RULE-SET,Twitter,fake-ip",
+      "RULE-SET,Telegram,fake-ip",
+      "RULE-SET,direct,real-ip",
+      "GEOSITE,CN,real-ip",
+      "MATCH,fake-ip"
+    ],
     "prefer-h3": false,
     "respect-rules": true,
     "use-hosts": true,
     "use-system-hosts": false,
-    "ipv6": false,
-    "fake-ip-filter": [
-      "*.lan", "*.arpa", "*.local", "geosite:private",
-      "+.internal.corp.com", "+.market.xiaomi.com", "geosite:category-ntp",
-      "geosite:geolocation-cn", "localhost.ptlogin2.qq.com", "geosite:connectivity-check"
-    ],
     "default-nameserver": [
-      "system", "223.5.5.5", "119.29.29.29",
-      "180.76.76.76", "180.184.1.1", "114.114.114.114"
+      "https://223.5.5.5/dns-query#DIRECT",
+      "https://223.6.6.6/dns-query#DIRECT"
     ],
+    "proxy-server-nameserver": [
+      "https://dns.alidns.com/dns-query#DIRECT",
+      "https://doh.pub/dns-query#DIRECT"
+    ],
+    "direct-nameserver": [
+      "https://dns.alidns.com/dns-query#DIRECT",
+      "https://doh.pub/dns-query#DIRECT"
+    ],
+    "direct-nameserver-follow-policy": false,
     "nameserver": [
-      "https://doh.pub/dns-query", "https://dns.alidns.com/dns-query",
-      "https://doh.360.cn/dns-query", "https://dns.google/dns-query",
-      "https://cloudflare-dns.com/dns-query"
+      "https://1.1.1.1/dns-query#漏网之鱼",
+      "https://8.8.8.8/dns-query#漏网之鱼"
     ],
     "nameserver-policy": {
-      "+.baidu.com": ["https://dns.alidns.com/dns-query"],
-      "+.internal.corp.com": ["10.0.0.1"]
+      "rule-set:ads": [
+        "https://dns.alidns.com/dns-query#广告拦截",
+        "https://doh.pub/dns-query#广告拦截"
+      ],
+      "rule-set:Ad": [
+        "https://dns.alidns.com/dns-query#广告拦截",
+        "https://doh.pub/dns-query#广告拦截"
+      ],
+      "+.lan": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "+.local": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "+.arpa": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "localhost": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "+.blip.net": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:applications": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "clash.razord.top": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "yacd.haishan.me": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:private": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:icloud": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:apple-direct": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "geosite:private": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "steamcdn-a.akamaihd.net": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "+.steamserver.net": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "+.steamcontent.com": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:ai-cn": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:ai-global": [
+        "https://1.1.1.1/dns-query#AI",
+        "https://8.8.8.8/dns-query#AI"
+      ],
+      "rule-set:GitHub": [
+        "https://1.1.1.1/dns-query#漏网之鱼",
+        "https://8.8.8.8/dns-query#漏网之鱼"
+      ],
+      "rule-set:OneDrive": [
+        "https://1.1.1.1/dns-query#漏网之鱼",
+        "https://8.8.8.8/dns-query#漏网之鱼"
+      ],
+      "+.assrt.net": [
+        "https://1.1.1.1/dns-query#漏网之鱼",
+        "https://8.8.8.8/dns-query#漏网之鱼"
+      ],
+      "rule-set:TikTok": [
+        "https://1.1.1.1/dns-query#TikTok",
+        "https://8.8.8.8/dns-query#TikTok"
+      ],
+      "rule-set:apple": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "rule-set:Twitter": [
+        "https://1.1.1.1/dns-query#社交媒体",
+        "https://8.8.8.8/dns-query#社交媒体"
+      ],
+      "rule-set:Telegram": [
+        "https://1.1.1.1/dns-query#社交媒体",
+        "https://8.8.8.8/dns-query#社交媒体"
+      ],
+      "rule-set:direct": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ],
+      "geosite:CN": [
+        "https://dns.alidns.com/dns-query#DIRECT",
+        "https://doh.pub/dns-query#DIRECT"
+      ]
     }
   },
   "rule-providers": {
     "ads": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "path": "./ruleset/ads.yaml",
       "behavior": "classical",
       "format": "yaml",
@@ -78,7 +230,7 @@ const customConfig = {
     },
     "Ad": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "domain",
       "format": "text",
       "interval": 86400,
@@ -87,7 +239,7 @@ const customConfig = {
     },
     "ai-cn": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "path": "./ruleset/ai-cn.yaml",
       "behavior": "classical",
       "format": "yaml",
@@ -96,7 +248,7 @@ const customConfig = {
     },
     "ai-global": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "path": "./ruleset/ai-global.yaml",
       "behavior": "classical",
       "format": "yaml",
@@ -105,7 +257,7 @@ const customConfig = {
     },
     "apple": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "path": "./ruleset/apple.yaml",
       "behavior": "classical",
       "format": "yaml",
@@ -114,7 +266,7 @@ const customConfig = {
     },
     "direct": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "path": "./ruleset/direct.yaml",
       "behavior": "domain",
       "format": "yaml",
@@ -123,7 +275,7 @@ const customConfig = {
     },
     "applications": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "path": "./ruleset/applications.yaml",
       "behavior": "classical",
       "format": "yaml",
@@ -132,7 +284,7 @@ const customConfig = {
     },
     "icloud": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
@@ -141,7 +293,7 @@ const customConfig = {
     },
     "apple-direct": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
@@ -150,7 +302,7 @@ const customConfig = {
     },
     "private": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "domain",
       "format": "yaml",
       "interval": 86400,
@@ -159,7 +311,7 @@ const customConfig = {
     },
     "cncidr": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "ipcidr",
       "format": "yaml",
       "interval": 86400,
@@ -168,7 +320,7 @@ const customConfig = {
     },
     "lancidr": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "ipcidr",
       "format": "yaml",
       "interval": 86400,
@@ -177,7 +329,7 @@ const customConfig = {
     },
     "TikTok": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
@@ -186,7 +338,7 @@ const customConfig = {
     },
     "Twitter": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
@@ -195,7 +347,7 @@ const customConfig = {
     },
     "Telegram": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
@@ -204,7 +356,7 @@ const customConfig = {
     },
     "GitHub": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
@@ -213,7 +365,7 @@ const customConfig = {
     },
     "OneDrive": {
       "type": "http",
-      "proxy": "DIRECT",
+      "proxy": "漏网之鱼",
       "behavior": "classical",
       "format": "yaml",
       "interval": 86400,
@@ -233,8 +385,7 @@ const customConfig = {
         "新加坡节点",
         "美国节点",
         "台湾节点",
-        "其他地区",
-        "DIRECT"
+        "其他地区"
       ]
     },
     {
@@ -248,8 +399,7 @@ const customConfig = {
         "香港节点",
         "台湾节点",
         "其他地区",
-        "自动选择",
-        "DIRECT"
+        "自动选择"
       ]
     },
     {
@@ -263,8 +413,7 @@ const customConfig = {
         "新加坡节点",
         "台湾节点",
         "其他地区",
-        "自动选择",
-        "DIRECT"
+        "自动选择"
       ]
     },
     {
@@ -278,8 +427,7 @@ const customConfig = {
         "美国节点",
         "台湾节点",
         "其他地区",
-        "自动选择",
-        "DIRECT"
+        "自动选择"
       ]
     },
     {
@@ -407,6 +555,10 @@ const customConfig = {
   "rules": [
     "RULE-SET,ads,广告拦截",
     "RULE-SET,Ad,广告拦截",
+    "DOMAIN-SUFFIX,lan,DIRECT",
+    "DOMAIN-SUFFIX,local,DIRECT",
+    "DOMAIN-SUFFIX,arpa,DIRECT",
+    "DOMAIN,localhost,DIRECT",
     "DOMAIN-SUFFIX,blip.net,DIRECT",
     "PROCESS-NAME,Blip.exe,DIRECT",
     "PROCESS-NAME,Blip,DIRECT",

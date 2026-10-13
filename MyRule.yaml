@@ -1,4 +1,4 @@
-# Last modified: 2026-10-13 01:41:39 (UTC+08:00)
+# Last modified: 2026-10-13 11:43:14 (UTC+08:00)
 mixed-port: 7890
 allow-lan: false
 bind-address: 127.0.0.1
@@ -8,8 +8,8 @@ external-controller: 127.0.0.1:9090
 unified-delay: true
 tcp-concurrent: true
 find-process-mode: strict
-# 关闭 IPv6 连接及 DNS IPv6 解析。
-ipv6: false
+# 开启 IPv6 连接和 AAAA 解析；TUN 同时接管 IPv4 / IPv6。
+ipv6: true
 profile:
   store-selected: true
   store-fake-ip: true
@@ -23,7 +23,7 @@ geox-url:
   geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
   geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
 
-# TUN 接管 IPv4 流量及 DNS 查询。
+# TUN 接管 IPv4 / IPv6 流量及 UDP / TCP DNS 查询。
 tun:
   enable: true
   stack: mixed
@@ -32,57 +32,122 @@ tun:
   strict-route: true
   route-address:
     - 0.0.0.0/0
+    - ::/0
   dns-hijack:
     - any:53
     - tcp://any:53
 
+# 白名单分流：域名 DNS 策略与下方路由规则保持同序，未匹配一律通过漏网之鱼查询。
 dns:
   enable: true
-  listen: '0.0.0.0:53'
-  enhanced-mode: 'fake-ip'
-  fake-ip-range: '198.18.0.1/16'
-  fake-ip-range6: 'fdfe:dcba:9876::1/64'
-  fake-ip-filter-mode: 'blacklist'
+  listen: '[::]:53'
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-filter-mode: rule
+  fake-ip-filter:
+    - RULE-SET,ads,fake-ip
+    - RULE-SET,Ad,fake-ip
+    - DOMAIN-SUFFIX,lan,real-ip
+    - DOMAIN-SUFFIX,local,real-ip
+    - DOMAIN-SUFFIX,arpa,real-ip
+    - DOMAIN,localhost,real-ip
+    - DOMAIN-SUFFIX,blip.net,real-ip
+    - RULE-SET,applications,real-ip
+    - DOMAIN,clash.razord.top,real-ip
+    - DOMAIN,yacd.haishan.me,real-ip
+    - RULE-SET,private,real-ip
+    - RULE-SET,icloud,real-ip
+    - RULE-SET,apple-direct,real-ip
+    - GEOSITE,private,real-ip
+    - DOMAIN,steamcdn-a.akamaihd.net,real-ip
+    - DOMAIN-SUFFIX,steamserver.net,real-ip
+    - DOMAIN-SUFFIX,steamcontent.com,real-ip
+    - RULE-SET,ai-cn,real-ip
+    - RULE-SET,ai-global,fake-ip
+    - RULE-SET,GitHub,fake-ip
+    - RULE-SET,OneDrive,fake-ip
+    - DOMAIN-SUFFIX,assrt.net,fake-ip
+    - RULE-SET,TikTok,fake-ip
+    - RULE-SET,apple,real-ip
+    - RULE-SET,Twitter,fake-ip
+    - RULE-SET,Telegram,fake-ip
+    - RULE-SET,direct,real-ip
+    - GEOSITE,CN,real-ip
+    - MATCH,fake-ip
   prefer-h3: false
   respect-rules: true
   use-hosts: true
   use-system-hosts: false
-  ipv6: false
-  fake-ip-filter:
-    - '*.lan'
-    - '*.arpa'
-    - '*.local'
-    - 'geosite:private'
-    - '+.internal.corp.com'
-    - '+.market.xiaomi.com'
-    - 'geosite:category-ntp'
-    - 'geosite:geolocation-cn'
-    - 'localhost.ptlogin2.qq.com'
-    - 'geosite:connectivity-check'
+  # 引导解析仅使用 IP 地址形式的国内 DoH，无系统 DNS、明文 DNS 或明文回退。
   default-nameserver:
-    - 'system'
-    - '223.5.5.5'
-    - '119.29.29.29'
-    - '180.76.76.76'
-    - '180.184.1.1'
-    - '114.114.114.114'
+    - https://223.5.5.5/dns-query#DIRECT
+    - https://223.6.6.6/dns-query#DIRECT
+  # 节点域名须先直连解析，避免先连接代理、再解析代理的循环依赖。
+  proxy-server-nameserver: &domestic-doh
+    - https://dns.alidns.com/dns-query#DIRECT
+    - https://doh.pub/dns-query#DIRECT
+  # 进程 / IP 白名单实际命中 DIRECT 后，连接阶段同样使用国内 DoH。
+  direct-nameserver: *domestic-doh
+  direct-nameserver-follow-policy: false
   nameserver:
-    - 'https://doh.pub/dns-query'
-    - 'https://dns.alidns.com/dns-query'
-    - 'https://doh.360.cn/dns-query'
-    - 'https://dns.google/dns-query'
-    - 'https://cloudflare-dns.com/dns-query'
+    - https://1.1.1.1/dns-query#漏网之鱼
+    - https://8.8.8.8/dns-query#漏网之鱼
+  # DNS 地址后附加代理组名，显式使用该组当前节点；respect-rules 仅匹配 DNS 服务器地址。
   nameserver-policy:
-    '+.baidu.com':
-      - 'https://dns.alidns.com/dns-query'
-    '+.internal.corp.com':
-      - '10.0.0.1'
+    rule-set:ads:
+      - https://dns.alidns.com/dns-query#广告拦截
+      - https://doh.pub/dns-query#广告拦截
+    rule-set:Ad:
+      - https://dns.alidns.com/dns-query#广告拦截
+      - https://doh.pub/dns-query#广告拦截
+    +.lan: *domestic-doh
+    +.local: *domestic-doh
+    +.arpa: *domestic-doh
+    localhost: *domestic-doh
+    +.blip.net: *domestic-doh
+    rule-set:applications: *domestic-doh
+    clash.razord.top: *domestic-doh
+    yacd.haishan.me: *domestic-doh
+    rule-set:private: *domestic-doh
+    rule-set:icloud: *domestic-doh
+    rule-set:apple-direct: *domestic-doh
+    geosite:private: *domestic-doh
+    steamcdn-a.akamaihd.net: *domestic-doh
+    +.steamserver.net: *domestic-doh
+    +.steamcontent.com: *domestic-doh
+    rule-set:ai-cn: *domestic-doh
+    rule-set:ai-global:
+      - https://1.1.1.1/dns-query#AI
+      - https://8.8.8.8/dns-query#AI
+    rule-set:GitHub:
+      - https://1.1.1.1/dns-query#漏网之鱼
+      - https://8.8.8.8/dns-query#漏网之鱼
+    rule-set:OneDrive:
+      - https://1.1.1.1/dns-query#漏网之鱼
+      - https://8.8.8.8/dns-query#漏网之鱼
+    +.assrt.net:
+      - https://1.1.1.1/dns-query#漏网之鱼
+      - https://8.8.8.8/dns-query#漏网之鱼
+    rule-set:TikTok:
+      - https://1.1.1.1/dns-query#TikTok
+      - https://8.8.8.8/dns-query#TikTok
+    rule-set:apple: *domestic-doh
+    rule-set:Twitter:
+      - https://1.1.1.1/dns-query#社交媒体
+      - https://8.8.8.8/dns-query#社交媒体
+    rule-set:Telegram:
+      - https://1.1.1.1/dns-query#社交媒体
+      - https://8.8.8.8/dns-query#社交媒体
+    rule-set:direct: *domestic-doh
+    geosite:CN: *domestic-doh
 
 rule-providers:
 
   ads:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     path: ./ruleset/ads.yaml
     behavior: classical
     format: yaml
@@ -91,7 +156,7 @@ rule-providers:
 
   Ad:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: domain
     format: text
     interval: 86400
@@ -100,7 +165,7 @@ rule-providers:
 
   ai-cn:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     path: ./ruleset/ai-cn.yaml
     behavior: classical
     format: yaml
@@ -110,7 +175,7 @@ rule-providers:
 
   ai-global:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     path: ./ruleset/ai-global.yaml
     behavior: classical
     format: yaml
@@ -119,7 +184,7 @@ rule-providers:
 
   apple:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     path: ./ruleset/apple.yaml
     behavior: classical
     format: yaml
@@ -128,7 +193,7 @@ rule-providers:
 
   direct:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     path: ./ruleset/direct.yaml
     behavior: domain
     format: yaml
@@ -137,7 +202,7 @@ rule-providers:
 
   applications:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     path: ./ruleset/applications.yaml
     behavior: classical
     format: yaml
@@ -146,7 +211,7 @@ rule-providers:
 
   icloud:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: domain
     format: yaml
     interval: 86400
@@ -155,7 +220,7 @@ rule-providers:
 
   apple-direct:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: domain
     format: yaml
     interval: 86400
@@ -164,7 +229,7 @@ rule-providers:
 
   private:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: domain
     format: yaml
     interval: 86400
@@ -173,7 +238,7 @@ rule-providers:
 
   cncidr:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: ipcidr
     format: yaml
     interval: 86400
@@ -182,7 +247,7 @@ rule-providers:
 
   lancidr:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: ipcidr
     format: yaml
     interval: 86400
@@ -191,7 +256,7 @@ rule-providers:
 
   TikTok:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: classical
     format: yaml
     interval: 86400
@@ -200,7 +265,7 @@ rule-providers:
 
   Twitter:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: classical
     format: yaml
     interval: 86400
@@ -209,7 +274,7 @@ rule-providers:
 
   Telegram:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: classical
     format: yaml
     interval: 86400
@@ -218,7 +283,7 @@ rule-providers:
 
   GitHub:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: classical
     format: yaml
     interval: 86400
@@ -227,7 +292,7 @@ rule-providers:
 
   OneDrive:
     type: http
-    proxy: DIRECT
+    proxy: 漏网之鱼
     behavior: classical
     format: yaml
     interval: 86400
@@ -246,7 +311,6 @@ proxy-groups:
       - "美国节点"
       - "台湾节点"
       - "其他地区"
-      - DIRECT
 
   - name: "AI"
     type: select
@@ -259,7 +323,6 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - 自动选择
-      - DIRECT
 
   - name: "TikTok"
     type: select
@@ -272,7 +335,6 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - 自动选择
-      - DIRECT
 
   - name: "社交媒体"
     type: select
@@ -285,7 +347,6 @@ proxy-groups:
       - "台湾节点"
       - "其他地区"
       - 自动选择
-      - "DIRECT"
 
   - name: 自动选择
     type: url-test
@@ -405,6 +466,12 @@ rules:
   # 广告规则优先匹配
   - "RULE-SET,ads,广告拦截"
   - "RULE-SET,Ad,广告拦截"
+
+  # 本地域名白名单，与 DNS 的真实地址例外保持一致。
+  - "DOMAIN-SUFFIX,lan,DIRECT"
+  - "DOMAIN-SUFFIX,local,DIRECT"
+  - "DOMAIN-SUFFIX,arpa,DIRECT"
+  - "DOMAIN,localhost,DIRECT"
 
   # Blip 跨平台直连：官网、生产服务、传输中继及日志等全部子域名
   - "DOMAIN-SUFFIX,blip.net,DIRECT"
