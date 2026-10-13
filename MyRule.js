@@ -1,21 +1,14 @@
-// Last modified: 2026-10-13 11:36:22 (UTC+08:00)
-// FlClash Override Script
-// Select this script in FlClash profile override settings.
-// These sections mirror MyRule.yaml. DNS policies follow domain routing order.
+// Last modified: 2026-10-13 17:58:04 (UTC+08:00)
+// Clash Verge Rev extension script. Select it in the profile's script settings.
+// DNS policies follow domain routing order.
 // Process/IP rules resolve via direct-nameserver after DIRECT is selected.
 // Explicit #group DNS routes follow that group; no plaintext/system DNS fallback.
+// Keep subscription proxy groups so their saved selections remain available.
+// Ports, mode, IPv6, TUN, and controller settings are managed by the app.
 
 const customConfig = {
-  "mixed-port": 7890,
-  "allow-lan": false,
-  "bind-address": "127.0.0.1",
-  "mode": "rule",
-  "log-level": "info",
-  "external-controller": "127.0.0.1:9090",
-  "unified-delay": true,
   "tcp-concurrent": true,
   "find-process-mode": "strict",
-  "ipv6": true,
   "profile": {
     "store-selected": true,
     "store-fake-ip": true
@@ -27,21 +20,6 @@ const customConfig = {
   "geox-url": {
     "geoip": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat",
     "geosite": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
-  },
-  "tun": {
-    "enable": true,
-    "stack": "mixed",
-    "auto-route": true,
-    "auto-detect-interface": true,
-    "strict-route": true,
-    "route-address": [
-      "0.0.0.0/0",
-      "::/0"
-    ],
-    "dns-hijack": [
-      "any:53",
-      "tcp://any:53"
-    ]
   },
   "dns": {
     "enable": true,
@@ -434,7 +412,7 @@ const customConfig = {
       "name": "自动选择",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "exclude-type": "Direct",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)",
@@ -443,13 +421,13 @@ const customConfig = {
       "tolerance": 50,
       "timeout": 3000,
       "max-failed-times": 1,
-      "lazy": true
+      "lazy": false
     },
     {
       "name": "香港节点",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "filter": "(?i)香港|Hong[ -]?Kong|\\bHK\\b|🇭🇰",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)",
@@ -465,7 +443,7 @@ const customConfig = {
       "name": "日本节点",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "filter": "(?i)日本|Japan|\\bJP\\b|🇯🇵",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)",
@@ -481,7 +459,7 @@ const customConfig = {
       "name": "新加坡节点",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "filter": "(?i)新加坡|Singapore|\\bSG\\b|🇸🇬",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)",
@@ -497,7 +475,7 @@ const customConfig = {
       "name": "美国节点",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "filter": "(?i)美国|美國|United[ -]?States|America|\\bUS\\b|🇺🇸",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)",
@@ -513,7 +491,7 @@ const customConfig = {
       "name": "台湾节点",
       "type": "url-test",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "filter": "(?i)台湾|台灣|Taiwan|\\bTW\\b|🇹🇼",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)",
@@ -529,7 +507,7 @@ const customConfig = {
       "name": "其他地区",
       "type": "select",
       "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Nations.png",
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "exclude-filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)|香港|Hong[ -]?Kong|\\bHK\\b|🇭🇰|日本|Japan|\\bJP\\b|🇯🇵|新加坡|Singapore|\\bSG\\b|🇸🇬|美国|美國|United[ -]?States|America|\\bUS\\b|🇺🇸|台湾|台灣|Taiwan|\\bTW\\b|🇹🇼",
       "exclude-type": "Direct"
@@ -547,7 +525,7 @@ const customConfig = {
       "name": "订阅信息",
       "type": "select",
       "hidden": true,
-      "include-all-proxies": true,
+      "include-all": true,
       "empty-fallback": "REJECT",
       "filter": "(?i)^(?:\\[[^\\]]+\\]\\s*)?[\\p{P}\\p{S}\\s]*(?:官网|官網|流量|剩余|剩餘|到期|过期|套餐|订阅|(?:距离|距離)下次重置|下次重置|重置|过滤掉|traffic|expire|expired|subscription|reset|official|website)"
     }
@@ -595,9 +573,28 @@ const customConfig = {
 
 function main(config) {
   config = config || {};
+  const customGroups = customConfig["proxy-groups"].map(group => ({
+    ...group,
+    ...(group.proxies ? { proxies: group.proxies.slice() } : {})
+  }));
+  const customNames = new Set(customGroups.map(group => group.name));
+  const originalGroups = Array.isArray(config["proxy-groups"])
+    ? config["proxy-groups"].filter(group => group && !customNames.has(group.name))
+    : [];
+  const originalPrimary = originalGroups.find(group =>
+    group.type === "select" &&
+    Array.isArray(group.proxies) &&
+    group.proxies.length > 0 &&
+    !group.proxies.includes("漏网之鱼")
+  );
+  if (originalPrimary) {
+    customGroups[0].proxies.unshift(originalPrimary.name);
+  }
   for (const key in customConfig) {
+    if (key === "proxy-groups") continue;
     config[key] = customConfig[key];
   }
+  config["proxy-groups"] = customGroups.concat(originalGroups);
   config.rules = customConfig.rules.slice();
   return config;
 }
