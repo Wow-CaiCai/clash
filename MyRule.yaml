@@ -1,4 +1,4 @@
-# Last modified: 2026-10-13 18:29:01 (UTC+08:00)
+# Last modified: 2026-10-13 18:44:02 (UTC+08:00)
 # 端口、运行模式、IPv6、TUN 与控制器由 Clash Verge Rev 应用设置管理。
 tcp-concurrent: true
 find-process-mode: strict
@@ -137,10 +137,11 @@ rule-providers:
     type: http
     proxy: DIRECT
     behavior: domain
-    format: text
+    # 同一广告规则源的二进制版本，降低手机加载峰值内存。
+    format: mrs
     interval: 86400
-    url: https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules_domainset.txt
-    path: ./ruleset/anti-ad-clash.yaml
+    url: https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules-mihomo.mrs
+    path: ./ruleset/Ad.mrs
 
   ai-cn:
     type: http
@@ -172,11 +173,12 @@ rule-providers:
   direct:
     type: http
     proxy: DIRECT
-    path: ./ruleset/direct.yaml
+    path: ./ruleset/direct.mrs
     behavior: domain
-    format: yaml
+    # Loyalsoldier 规则的 MRS 转换版本，避免展开大型 YAML 域名表。
+    format: mrs
     interval: 86400
-    url: https://cdn.jsdmirror.com/gh/Loyalsoldier/clash-rules@release/direct.txt
+    url: https://cdn.jsdmirror.com/gh/wwqgtxx/clash-rules@release/direct.mrs
 
   applications:
     type: http
