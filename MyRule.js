@@ -1,4 +1,4 @@
-// Last modified: 2026-10-13 19:08:53 (UTC+08:00)
+// Last modified: 2026-10-17 01:47:26 (UTC+08:00)
 // Clash Verge Rev extension script. Select it in the profile's script settings.
 // DNS policies follow domain routing order.
 // Process/IP rules resolve via direct-nameserver after DIRECT is selected.
@@ -207,14 +207,16 @@ const customConfig = {
       "interval": 86400,
       "url": "https://cdn.jsdmirror.com/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml"
     },
+    // Load the compiled domain set to reduce mobile startup memory.
+    // A separate cache path prevents reusing the old text rules.
     "Ad": {
       "type": "http",
       "proxy": "DIRECT",
       "behavior": "domain",
-      "format": "text",
+      "format": "mrs",
       "interval": 86400,
-      "url": "https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules_domainset.txt",
-      "path": "./ruleset/anti-ad-clash.yaml"
+      "url": "https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules-mihomo.mrs",
+      "path": "./ruleset/adrules.mrs"
     },
     "ai-cn": {
       "type": "http",

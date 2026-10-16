@@ -1,4 +1,4 @@
-# Last modified: 2026-10-13 19:08:53 (UTC+08:00)
+# Last modified: 2026-10-17 01:47:26 (UTC+08:00)
 # 端口、运行模式、IPv6、TUN 与控制器由 Clash Verge Rev 应用设置管理。
 tcp-concurrent: true
 find-process-mode: strict
@@ -133,14 +133,16 @@ rule-providers:
     interval: 86400
     url: https://cdn.jsdmirror.com/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
 
+  # MRS 直接加载编译后的域名集合，降低移动端文本解析的内存峰值。
+  # 使用独立缓存路径，避免读取旧的文本规则缓存。
   Ad:
     type: http
     proxy: DIRECT
     behavior: domain
-    format: text
+    format: mrs
     interval: 86400
-    url: https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules_domainset.txt
-    path: ./ruleset/anti-ad-clash.yaml
+    url: https://cdn.jsdmirror.com/gh/Cats-Team/AdRules@main/adrules-mihomo.mrs
+    path: ./ruleset/adrules.mrs
 
   ai-cn:
     type: http
